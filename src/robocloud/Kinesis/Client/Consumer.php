@@ -1,6 +1,11 @@
 <?php
 
 namespace robocloud\Kinesis\Client;
+use Aws\Kinesis\KinesisClient;
+use robocloud\Event\KinesisConsumerError;
+use robocloud\Message\MessageFactoryInterface;
+use robocloud\Message\MessageInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class Consumer.
@@ -68,6 +73,59 @@ class Consumer extends AbstractKinesisClient implements ConsumerInterface {
    * @see http://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html
    */
   const ITERATOR_TYPE_AFTER_SEQUENCE_NUMBER = 'AFTER_SEQUENCE_NUMBER';
+
+
+  public function __construct(KinesisClient $client, $streamName, MessageFactoryInterface $messageFactory, EventDispatcherInterface $eventDispatcher, ConsumerRecoveryInterface $consumerRecovery) {
+    parent::__construct($client, $streamName, $messageFactory, $eventDispatcher);
+  }
+
+  /**
+   * Consumes messages from Kinesis.
+   *
+   * @param int $run_time
+   *   Time period in seconds for how long the consume process should run.
+   *
+   * @throws \Drupal\acquia_kinesis\Exception\ShardInitiationException
+   */
+  public function consume($run_time = 0) {
+    $shards_ids = $this->getShardIds();
+    if (!isset($shards_ids[$this->getShardPosition()])) {
+      throw new ShardInitiationException('No shard found at position ' . $this->getShardPosition());
+    }
+
+    $shard_id = $shards_ids[$this->getShardPosition()];
+    $last_sequence_number = NULL;
+
+    if ($this->getConsumerRecovery()->hasRecoveryData()) {
+      $last_sequence_number = $this->getConsumerRecovery()->getLastSequenceNumber($shard_id);
+    }
+
+    $start = time();
+
+    do {
+      $messages = $this->getMessages($shard_id, $last_sequence_number);
+
+      // Do not bother when we do not receive any records.
+      if (!empty($messages)) {
+        $last_sequence_number = $this->getLastSequenceNumber();
+
+        foreach ($this->getMessageProcessors() as $processor) {
+          try {
+            $processor->processMessages($messages);
+          }
+          catch (\Exception $e) {
+            watchdog('acquia_kinesis', 'Error on Message Processor @processor @error', [
+              '@processor' => get_class($processor),
+              '@error' => $e->getMessage(),
+            ], WATCHDOG_ERROR);
+          }
+        }
+
+        $this->getConsumerRecovery()->storeLastSuccessPosition($this->getLastShardId(), $last_sequence_number);
+      }
+
+    } while (!empty($messages) && ($start + $run_time) > time());
+  }
 
   /**
    * {@inheritdoc}
@@ -205,6 +263,14 @@ class Consumer extends AbstractKinesisClient implements ConsumerInterface {
     $res = $this->getClient()->getShardIterator($args);
 
     return $res->get('ShardIterator');
+  }
+
+  /**
+   * @param \Exception $exception
+   * @param array $data
+   */
+  public function processError(\Exception $exception, array $data = []) {
+    $this->getEventDispatcher()->dispatch(KinesisConsumerError::NAME, new KinesisConsumerError($exception, $data));
   }
 
   /**

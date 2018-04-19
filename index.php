@@ -6,6 +6,7 @@ use robocloud\Config\DefaultConfig;
 use robocloud\Message\Message;
 use robocloud\Message\MessageFactory;
 use robocloud\Message\MessageSchemaValidator;
+use robocloud\ProducerService;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 $config = new DefaultConfig();
@@ -27,5 +28,8 @@ $message_factory->setMessageClass(Message::class)->setMessageData([
   ],
 ]);
 $message = $message_factory->createMessage();
+
+$producer = new ProducerService();
+$producer->pushMessages([$message]);
 
 var_dump($message);

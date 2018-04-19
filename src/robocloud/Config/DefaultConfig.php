@@ -7,11 +7,13 @@ use Symfony\Component\Yaml\Yaml;
 
 class DefaultConfig implements ConfigInterface {
 
-  protected static $instance;
+  protected $streamName;
 
   protected $messageSchemaDir;
 
   protected $messageSchemaVersion;
+
+  protected $recoveryConsumerRecoveryFile;
 
   /**
    * DefaultConfig constructor.
@@ -20,8 +22,14 @@ class DefaultConfig implements ConfigInterface {
    */
   public function __construct() {
     $yaml = Yaml::parseFile('conf/conf.yml');
+    $this->streamName = $yaml['stream-name'];
     $this->messageSchemaDir = $yaml['message-schema-dir'];
     $this->messageSchemaVersion = $yaml['message-schema-version'];
+    $this->recoveryConsumerRecoveryFile = $yaml['consumer-recovery-file'];
+  }
+
+  public function getStreamName() {
+    return $this->streamName;
   }
 
   public function getMessageSchemaDir() {
@@ -30,6 +38,10 @@ class DefaultConfig implements ConfigInterface {
 
   public function getMessageSchemaVersion() {
     return $this->messageSchemaVersion;
+  }
+
+  public function getRecoveryConsumerRecoveryFile() {
+    return $this->recoveryConsumerRecoveryFile;
   }
 
 }

@@ -29,12 +29,4 @@ interface ProducerInterface {
    */
   public function pushAll();
 
-  /**
-   * Gets the batch size.
-   *
-   * @return int
-   *   The batch size.
-   */
-  public function getBatchSize();
-
 }

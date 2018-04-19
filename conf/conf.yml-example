@@ -1,4 +1,6 @@
 
+stream-name: "MY_Robotic_Stream"
+
 # Where the message schema files are located.
 message-schema-dir: 'schema/stream/robocloud/message'
 

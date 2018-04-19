@@ -2,8 +2,10 @@
 
 namespace robocloud\Kinesis\Client;
 
+use Aws\Result;
+use robocloud\Event\KinesisProducerError;
+use robocloud\Exception\KinesisFailedRecordsException;
 use robocloud\Message\MessageInterface;
-use Aws\Kinesis\KinesisClient;
 
 /**
  * Class Producer.
@@ -30,32 +32,6 @@ class Producer extends AbstractKinesisClient implements ProducerInterface {
   const KINESIS_MAX_PUT_RECORDS_COUNT = 500;
 
   /**
-   * Producer constructor.
-   *
-   * @param \Aws\Kinesis\KinesisClient $client
-   *   The Kinesis client object.
-   * @param string $stream_name
-   *   The stream name.
-   * @param array $config
-   *   - error : Executed if an error was encountered executing a,
-   *     putRecords operation, otherwise errors are ignored. It should
-   *     accept an \Exception and an array of MessageInterface objects as its
-   *     arguments.
-   *   - batch_size : Count of the records that will be pushed to Kinesis
-   *     stream in single request. The max batch size is 500.
-   *
-   * @throws \InvalidArgumentException
-   *   When invalid configuration options are provided.
-   */
-  public function __construct(KinesisClient $client, $stream_name, array $config) {
-    parent::__construct($client, $stream_name, $config);
-
-    if ($this->getBatchSize() > self::KINESIS_MAX_PUT_RECORDS_COUNT) {
-      throw new \InvalidArgumentException('The records count per requests exceeds the max put records count');
-    }
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function add(MessageInterface $message) {
@@ -66,47 +42,61 @@ class Producer extends AbstractKinesisClient implements ProducerInterface {
    * {@inheritdoc}
    */
   public function pushAll() {
-    $args = ['StreamName' => $this->getStreamName()];
-    $result = [];
+    $results = [];
 
-    foreach (array_chunk($this->buffer, $this->getBatchSize()) as $chunk) {
-      /** @var \robocloud\Message\Message $message */
-      foreach ($chunk as $message) {
-        $args['Records'][] = [
-          'Data' => $this->getMessageFactory()->serialize($message),
-          'PartitionKey' => $message->getRoboId(),
-        ];
+    /** @var \robocloud\Message\Message[] $chunk */
+    foreach (array_chunk($this->buffer, self::KINESIS_MAX_PUT_RECORDS_COUNT) as $chunk) {
+      try {
+        $results[] = $this->putRecords($chunk);
       }
-
-      if (!empty($args['Records'])) {
-        try {
-          $result[] = $this->getClient()->putRecords($args);
-        }
-        catch (\Exception $e) {
-          if (isset($this->config['error'])) {
-            $error = $this->config['error'];
-            $error($e, $chunk);
-          }
-        }
+      catch (\Exception $e) {
+        $this->processError($e, $chunk);
       }
-
     }
 
     // Empty the buffer.
     $this->buffer = [];
 
-    return $result;
+    return $results;
   }
 
   /**
-   * {@inheritdoc}
+   * @param \Exception $exception
+   * @param MessageInterface[] $messages
+   *   In case of Producer error we pass in only messages that failed to be
+   *   pushed.
    */
-  public function getBatchSize() {
-    if (isset($this->config['batch_size'])) {
-      return $this->config['batch_size'];
+  public function processError(\Exception $exception, array $messages = []) {
+    $this->getEventDispatcher()->dispatch(KinesisProducerError::NAME, new KinesisProducerError($exception, $messages));
+  }
+
+  /**
+   * @param array $chunk
+   *
+   * @throws KinesisFailedRecordsException
+   *   When the Kinesis Result FailedRecordCount is grater than zero.
+   */
+  protected function putRecords(array $chunk) {
+
+    $args = ['StreamName' => $this->getStreamName()];
+
+    foreach ($chunk as $message) {
+      $args['Records'][] = [
+        'Data' => $this->getMessageFactory()->serialize($message),
+        // The partition key is the robo id so that from an individual robot
+        // messages are pushed into same shard.
+        'PartitionKey' => $message->getRoboId(),
+      ];
     }
 
-    return self::KINESIS_MAX_PUT_RECORDS_COUNT;
+    if (!empty($args['Records'])) {
+      /** @var Result $result */
+      $result = $this->getClient()->putRecords($args);
+
+      if ($result->get('FailedRecordCount') > 0) {
+        throw new KinesisFailedRecordsException('Failed to push [' . $result->get('FailedRecordCount') . '] records');
+      }
+    }
   }
 
 }

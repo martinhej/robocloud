@@ -1,6 +1,7 @@
 <?php
 
 namespace robocloud\Kinesis\Client;
+use robocloud\Message\MessageInterface;
 
 /**
  * Interface ClientInterface.
@@ -38,10 +39,10 @@ interface ClientInterface {
    *
    * @param \Exception $exception
    *   The exception.
-   * @param mixed $data
-   *   Additional data involved in the error.
+   * @param array $data
+   *   Data relevant to the error that occurred.
    */
-  public function processError(\Exception $exception, $data = NULL);
+  public function processError(\Exception $exception, array $data = []);
 
   /**
    * Gets the message factory.
