@@ -1,0 +1,34 @@
+{
+    "name": "robomaze/robocloud",
+    "description": "Robocloud extension of AWS SDK for PHP for use with Kinesis and DynamoDB",
+    "type": "library",
+    "require": {
+        "aws/aws-sdk-php": "^3.30",
+        "php": ">=5.5",
+        "symfony/yaml": "^4.1@dev",
+        "symfony/dependency-injection": "^4.1@dev",
+        "symfony/config": "^4.1@dev",
+        "symfony/event-dispatcher": "^4.1@dev"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.2@dev",
+        "symfony/phpunit-bridge": "^4.1@dev"
+    },
+    "authors": [
+        {
+            "name": "Martin Micuch",
+            "email": "martin.micuch@yandex.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "robocloud\\": "src/robocloud"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "robocloud\\Tests\\": "tests/robocloud"
+        }
+    }
+}

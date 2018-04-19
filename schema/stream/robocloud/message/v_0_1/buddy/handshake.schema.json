@@ -1,0 +1,13 @@
+{
+  "$schema": "http://robomaze.io/message/v_0_1/buddy/handshake/schema#",
+  "title": "Handshake",
+  "description": "A confirmation on seeker - buddy relation.",
+  "type": "object",
+  "properties": {
+    "friendlyMessage": {
+      "description": "A friendly message for the newly found buddy.",
+      "type": "string"
+    }
+  },
+  "required": []
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "http://robomaze.io/message/v_0_1/skills/list/schema#",
+  "title": "List Skills",
+  "description": "Provides list of skills the originator has.",
+  "type": "object",
+  "properties": {
+    "skills": {
+      "description": "The list of skills definitions.",
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["skills"]
+}

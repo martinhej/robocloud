@@ -1,0 +1,6 @@
+
+# Where the message schema files are located.
+message-schema-dir: 'schema/stream/robocloud/message'
+
+# The version of message schemas to be used.
+message-schema-version: 'v_0_1'

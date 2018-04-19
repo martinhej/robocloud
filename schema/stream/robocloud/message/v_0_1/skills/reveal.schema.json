@@ -1,0 +1,8 @@
+{
+  "$schema": "http://robomaze.io/message/v_0_1/skills/reveal/schema#",
+  "title": "Reveal Skills",
+  "description": "A request to the recipient to reveal its skills.",
+  "type": "object",
+  "properties": {},
+  "required": []
+}

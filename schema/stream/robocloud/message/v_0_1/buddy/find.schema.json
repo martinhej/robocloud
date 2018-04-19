@@ -1,0 +1,13 @@
+{
+  "$schema": "http://robomaze.io/message/v_0_1/buddy/find/schema#",
+  "title": "Find buddy",
+  "description": "A kind request to find a buddy.",
+  "type": "object",
+  "properties": {
+    "reason": {
+      "description": "The reason why the robot is searching for a buddy.",
+      "type": "string"
+    }
+  },
+  "required": ["reason"]
+}
