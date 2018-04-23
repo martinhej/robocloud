@@ -15,7 +15,7 @@ class DefaultConfig implements ConfigInterface {
    * @throws ParseException If the YAML is not valid.
    */
   public function __construct() {
-    $this->yaml = Yaml::parseFile('conf/conf.yml');
+    $this->yaml = Yaml::parseFile('config/robocloud.yml');
   }
 
   public function getStreamName() {
