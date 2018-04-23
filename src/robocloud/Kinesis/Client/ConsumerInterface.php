@@ -10,22 +10,27 @@ namespace robocloud\Kinesis\Client;
 interface ConsumerInterface {
 
   /**
-   * Gets records from the stream from a specific shard.
+   * Do a single call to a Kinesis stream to get messages.
    *
-   * This method should not be used to do a single call, instead it should be
-   * called in a loop until the subsequent call of getMillisBehindLatest() will
-   * return 0 which means the tip of the stream has been reached.
-   *
-   * @param string $shard_id
+   * @param string $shardId
    *   The shard id from which to start reading.
-   * @param string $last_sequence_number
+   * @param string $lastSequenceNumber
    *   The last record sequence number the last call of getRecords() ended. The
    *   value will be provided by a subsequent call of getLastSequenceNumber().
    *
    * @return \robocloud\Message\MessageInterface[]
    *   The messages.
    */
-  public function getMessages($shard_id = NULL, $last_sequence_number = NULL);
+  public function getMessages($shardId = NULL, $lastSequenceNumber = NULL);
+
+  /**
+   * Consumes messages from Kinesis stream.
+   *
+   * @param int $shardPosition
+   * @param int $runTime
+   * @return mixed
+   */
+  public function consume($shardPosition, $runTime = 0);
 
   /**
    * Gets number of milliseconds of the last record being behind latest.
@@ -56,7 +61,7 @@ interface ConsumerInterface {
    *
    * With setting the batch size the overall number of records returned by
    * getRecords() may be approximately controlled as the maximum number of
-   * records is equal to batch size multiplied by the shard count in the stream.
+   * records is equal to batch size value.
    *
    * @param int $size
    *   The number of records pulled in one call.

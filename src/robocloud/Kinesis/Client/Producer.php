@@ -92,7 +92,6 @@ class Producer extends AbstractKinesisClient implements ProducerInterface {
     if (!empty($args['Records'])) {
       /** @var Result $result */
       $result = $this->getClient()->putRecords($args);
-
       if ($result->get('FailedRecordCount') > 0) {
         throw new KinesisFailedRecordsException('Failed to push [' . $result->get('FailedRecordCount') . '] records');
       }

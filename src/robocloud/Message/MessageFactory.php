@@ -69,10 +69,6 @@ class MessageFactory implements MessageFactoryInterface {
   public function setMessageClass($class) {
     $this->messageClass = $class;
 
-    if (!in_array(MessageInterface::class, class_implements($this->messageClass))) {
-      throw new InvalidMessageClassException('Invalid message class provided: ' . $this->messageClass);
-    }
-
     return $this;
   }
 
@@ -89,6 +85,11 @@ class MessageFactory implements MessageFactoryInterface {
    * {@inheritdoc}
    */
   public function createMessage() {
+
+    if (!in_array(MessageInterface::class, class_implements($this->messageClass))) {
+      throw new InvalidMessageClassException('Invalid message class provided: ' . $this->messageClass);
+    }
+
     /** @var \robocloud\Message\MessageInterface $message */
     $message = new $this->messageClass($this->getData());
 

@@ -152,9 +152,9 @@ class Message implements MessageInterface {
    * {@inheritdoc}
    */
   public function jsonSerialize() {
-    return [
-      'origin' => $this->getMessageId(),
+    $messageData = [
       'roboId' => $this->getRoboId(),
+      'messageId' => $this->getMessageId(),
       'priority' => $this->getPriority(),
       'purpose' => $this->getPurpose(),
       'tags' => $this->getTags(),
@@ -164,6 +164,17 @@ class Message implements MessageInterface {
       'recipients' => $this->getRecipients(),
       'recipientWildcard' => $this->getRecipientWildcard(),
     ];
+
+    if (empty($messageData['messageTime'])) {
+      $date = new \DateTime('now', new \DateTimeZone('UTC'));
+      $messageData['messageTime'] = $date->format(\DateTime::ISO8601);
+    }
+
+    if (empty($messageData['messageId'])) {
+      $messageData['messageId'] = sha1(serialize($messageData));
+    }
+
+    return $messageData;
   }
 
   /**

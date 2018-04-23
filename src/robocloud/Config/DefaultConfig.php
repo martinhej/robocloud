@@ -7,13 +7,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class DefaultConfig implements ConfigInterface {
 
-  protected $streamName;
-
-  protected $messageSchemaDir;
-
-  protected $messageSchemaVersion;
-
-  protected $recoveryConsumerRecoveryFile;
+  protected $yaml = [];
 
   /**
    * DefaultConfig constructor.
@@ -21,27 +15,56 @@ class DefaultConfig implements ConfigInterface {
    * @throws ParseException If the YAML is not valid.
    */
   public function __construct() {
-    $yaml = Yaml::parseFile('conf/conf.yml');
-    $this->streamName = $yaml['stream-name'];
-    $this->messageSchemaDir = $yaml['message-schema-dir'];
-    $this->messageSchemaVersion = $yaml['message-schema-version'];
-    $this->recoveryConsumerRecoveryFile = $yaml['consumer-recovery-file'];
+    $this->yaml = Yaml::parseFile('conf/conf.yml');
   }
 
   public function getStreamName() {
-    return $this->streamName;
+    return $this->yaml['stream-name'];
   }
 
   public function getMessageSchemaDir() {
-    return $this->messageSchemaDir;
+    return $this->yaml['message-schema-dir'];
   }
 
   public function getMessageSchemaVersion() {
-    return $this->messageSchemaVersion;
+    return $this->yaml['message-schema-version'];
   }
 
   public function getRecoveryConsumerRecoveryFile() {
-    return $this->recoveryConsumerRecoveryFile;
+    return $this->yaml['consumer-recovery-file'];
   }
+
+  public function getKinesisApiVersion() {
+    return $this->yaml['kinesis-api-version'];
+  }
+
+  public function getKinesisRegion() {
+    return $this->yaml['kinesis-region'];
+  }
+
+  public function getKinesisConsumerKey() {
+    return $this->yaml['kinesis-consumer-key'];
+  }
+
+  public function getKinesisConsumerSecret() {
+    return $this->yaml['kinesis-consumer-secret'];
+  }
+
+  public function getKinesisProducerKey() {
+    return $this->yaml['kinesis-producer-key'];
+  }
+
+  public function getKinesisProducerSecret() {
+    return $this->yaml['kinesis-producer-secret'];
+  }
+
+  public function getDynamoDbApiVersion() {
+    return $this->yaml['dynamodb-api-version'];
+  }
+
+  public function getDynamoDbRegion() {
+    return $this->yaml['dynamodb-region'];
+  }
+
 
 }

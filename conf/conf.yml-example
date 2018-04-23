@@ -9,3 +9,19 @@ message-schema-version: 'v_0_1'
 
 # The Consumer recover file path.
 consumer-recovery-file: ''
+
+dynamodb-api-version: '2012-08-10'
+
+dynamodb-region: 'eu-west-1'
+
+kinesis-api-version: '2013-12-02'
+
+kinesis-region: 'eu-west-1'
+
+kinesis-consumer-key: ''
+
+kinesis-consumer-secret: ''
+
+kinesis-producer-key: ''
+
+kinesis-producer-secret: ''

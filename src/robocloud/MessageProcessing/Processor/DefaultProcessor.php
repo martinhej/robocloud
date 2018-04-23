@@ -2,16 +2,18 @@
 
 namespace robocloud\MessageProcessing\Processor;
 
+use robocloud\Event\MessagesConsumedEvent;
 use robocloud\MessageProcessing\Filter\FilterInterface;
 use robocloud\MessageProcessing\Backend\BackendInterface;
 use robocloud\MessageProcessing\Transformer\TransformerInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Class DefaultProcessor.
  *
  * @package robocloud\MessageProcessing\Processor
  */
-class DefaultProcessor implements ProcessorInterface {
+class DefaultProcessor implements ProcessorInterface, EventSubscriberInterface {
 
   /**
    * Message filter object.
@@ -53,7 +55,19 @@ class DefaultProcessor implements ProcessorInterface {
   /**
    * {@inheritdoc}
    */
-  public function processMessages(array $messages) {
+  public static function getSubscribedEvents() {
+    return [
+      MessagesConsumedEvent::NAME => 'processMessages',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function processMessages(MessagesConsumedEvent $event) {
+
+    $messages = $event->getMessages();
+
     foreach ($messages as $message) {
       if ($this->filter->keepMessage($message)) {
         $this->backend->add($this->transformer->transformMessage($message));

@@ -12,4 +12,20 @@ interface ConfigInterface {
 
   public function getRecoveryConsumerRecoveryFile();
 
+  public function getDynamoDbApiVersion();
+
+  public function getDynamoDbRegion();
+
+  public function getKinesisApiVersion();
+
+  public function getKinesisRegion();
+
+  public function getKinesisConsumerKey();
+
+  public function getKinesisConsumerSecret();
+
+  public function getKinesisProducerKey();
+
+  public function getKinesisProducerSecret();
+
 }

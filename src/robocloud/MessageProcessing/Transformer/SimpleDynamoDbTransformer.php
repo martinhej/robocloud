@@ -19,15 +19,19 @@ class SimpleDynamoDbTransformer implements TransformerInterface {
    */
   public function transformMessage(MessageInterface $message) {
     $data = [
-      'partitionKey' => ['S' => $message->getRoboId()],
-      'eventTime'    => ['S' => $message->getMessageTime()],
-      'title'        => ['S' => $message->getTitle()],
-      'origin'       => ['S' => $message->getMessageId()],
-      'identifier'   => ['S' => (string) $message->getPurpose()],
+      'roboId' => ['S' => $message->getRoboId()],
+      'messageId' => ['S' => $message->getMessageId()],
+      'messageTime' => ['S' => $message->getMessageTime()],
+      'priority' => ['S' => $message->getPriority()],
+      'purpose' => ['S' => $message->getPurpose()],
     ];
 
-    if ($description = $message->getDescription()) {
-      $data['description'] = ['S' => $description];
+    if ($responseTo = $message->getResponseTo()) {
+      $data['responseTo']['S'] = $responseTo;
+    }
+
+    if ($recipientWildcard = $message->getRecipientWildcard()) {
+      $data['recipientWildcard']['S'] = $recipientWildcard;
     }
 
     if ($message_data = $message->getData()) {
@@ -38,10 +42,16 @@ class SimpleDynamoDbTransformer implements TransformerInterface {
       }
     }
 
-    if ($labels = $message->getTags()) {
-      foreach ($labels as $label) {
-        if (!empty($label)) {
-          $data['labels']['L'][] = ['S' => (string) $label];
+    if ($recipients = $message->getRecipients()) {
+      foreach ($recipients as $recipient) {
+        $data['recipients']['L'][] = ['S' => (string) $recipient];
+      }
+    }
+
+    if ($tags = $message->getTags()) {
+      foreach ($tags as $tag) {
+        if (!empty($tag)) {
+          $data['tags']['L'][] = ['S' => (string) $tag];
         }
       }
     }
