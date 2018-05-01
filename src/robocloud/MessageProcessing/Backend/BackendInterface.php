@@ -14,10 +14,10 @@ interface BackendInterface {
   /**
    * Adds processed message data for being stored.
    *
-   * @param array $data
+   * @param mixed $data
    *   Message data returned by the TransformerInterface implementation.
    */
-  public function add(array $data);
+  public function add($data);
 
   /**
    * Takes any required action upon receiving robocloud data.

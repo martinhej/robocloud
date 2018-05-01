@@ -1,10 +1,9 @@
 <?php
 
-namespace robocloud\MessageProcessing\Backend\DynamoDb;
+namespace robocloud\MessageProcessing\Backend;
 
 use Aws\Exception\AwsException;
 use robocloud\Event\DynamoDbError;
-use robocloud\MessageProcessing\Backend\BackendInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\WriteRequestBatch;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -61,7 +60,7 @@ class DynamoDbBackend implements BackendInterface {
   /**
    * {@inheritdoc}
    */
-  public function add(array $data) {
+  public function add($data) {
     $this->writeRequestBatch->put($data);
   }
 

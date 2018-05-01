@@ -14,10 +14,10 @@ use robocloud\KinesisClientFactory;
 use robocloud\Message\Message;
 use robocloud\Message\MessageFactory;
 use robocloud\Message\MessageSchemaValidator;
-use robocloud\MessageProcessing\Backend\DynamoDb\DynamoDbBackend;
+use robocloud\MessageProcessing\Backend\DynamoDbBackend;
 use robocloud\MessageProcessing\Filter\KeepAllFilter;
 use robocloud\MessageProcessing\Processor\DefaultProcessor;
-use robocloud\MessageProcessing\Transformer\SimpleDynamoDbTransformer;
+use robocloud\MessageProcessing\Transformer\DynamoDbTransformer;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 // Create instance of the robocloud config.
@@ -74,7 +74,7 @@ $producer->pushAll();
 // Create instances needed for message processing: the filter, transformer
 // and backend.
 $filter = new KeepAllFilter();
-$transformer = new SimpleDynamoDbTransformer();
+$transformer = new DynamoDbTransformer();
 $dynamodb_factory = new DynamoDbClientFactory($config);
 $backend = new DynamoDbBackend($dynamodb_factory->getDynamoDbClient(), $config->getStreamName(), $event_dispatcher);
 

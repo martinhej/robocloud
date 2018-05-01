@@ -12,7 +12,7 @@ use robocloud\Message\MessageInterface;
  *
  * @package robocloud\MessageProcessing\Transformer
  */
-class SimpleDynamoDbTransformer implements TransformerInterface {
+class DynamoDbTransformer implements TransformerInterface {
 
   /**
    * {@inheritdoc}
