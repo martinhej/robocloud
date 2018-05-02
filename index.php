@@ -15,9 +15,11 @@ use robocloud\Message\Message;
 use robocloud\Message\MessageFactory;
 use robocloud\Message\MessageSchemaValidator;
 use robocloud\MessageProcessing\Backend\DynamoDbBackend;
+use robocloud\MessageProcessing\Backend\KeepInMemoryBackend;
 use robocloud\MessageProcessing\Filter\KeepAllFilter;
 use robocloud\MessageProcessing\Processor\DefaultProcessor;
 use robocloud\MessageProcessing\Transformer\DynamoDbTransformer;
+use robocloud\MessageProcessing\Transformer\KeepOriginalTransformer;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 // Create instance of the robocloud config.
@@ -74,12 +76,16 @@ $producer->pushAll();
 // Create instances needed for message processing: the filter, transformer
 // and backend.
 $filter = new KeepAllFilter();
-$transformer = new DynamoDbTransformer();
+$dynamodb_transformer = new DynamoDbTransformer();
 $dynamodb_factory = new DynamoDbClientFactory($config);
-$backend = new DynamoDbBackend($dynamodb_factory->getDynamoDbClient(), $config->getStreamName(), $event_dispatcher);
+$dynamodb_backend = new DynamoDbBackend($dynamodb_factory->getDynamoDbClient(), $config->getStreamName(), $event_dispatcher);
+
+$keep_original_transformer = new KeepOriginalTransformer();
+$keep_in_memory_backend = new KeepInMemoryBackend();
 
 // Add the subscriber for message processing.
-$event_dispatcher->addSubscriber(new DefaultProcessor($filter, $transformer, $backend));
+$event_dispatcher->addSubscriber(new DefaultProcessor($filter, $dynamodb_transformer, $dynamodb_backend));
+$event_dispatcher->addSubscriber(new DefaultProcessor($filter, $keep_original_transformer, $keep_in_memory_backend));
 
 // Instantiate the consumer and consume messages from Kinesis stream.
 $consumer = new Consumer(
@@ -92,5 +98,4 @@ $consumer = new Consumer(
 
 $consumer->consume(0);
 
-// push to kinesis works; reading probably as well - verify; not storing in dynamo
-// implement error listeners that log to console - abstract logging??? log4j
+var_dump($keep_in_memory_backend->flush());

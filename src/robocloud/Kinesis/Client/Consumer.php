@@ -1,6 +1,7 @@
 <?php
 
 namespace robocloud\Kinesis\Client;
+
 use Aws\Kinesis\KinesisClient;
 use robocloud\Event\KinesisConsumerError;
 use robocloud\Event\MessagesConsumedEvent;
@@ -126,7 +127,7 @@ class Consumer extends AbstractKinesisClient implements ConsumerInterface {
 
     do {
       $messages = $this->getMessages($shard_id, $last_sequence_number);
-var_dump($messages);
+
       // Do not bother when we do not receive any records.
       if (!empty($messages)) {
         $last_sequence_number = $this->getLastSequenceNumber();
