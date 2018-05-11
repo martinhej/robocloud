@@ -73,6 +73,8 @@ class Producer extends AbstractKinesisClient implements ProducerInterface {
   /**
    * @param array $chunk
    *
+   * @return Result
+   *
    * @throws KinesisFailedRecordsException
    *   When the Kinesis Result FailedRecordCount is grater than zero.
    */
@@ -95,6 +97,7 @@ class Producer extends AbstractKinesisClient implements ProducerInterface {
       if ($result->get('FailedRecordCount') > 0) {
         throw new KinesisFailedRecordsException('Failed to push [' . $result->get('FailedRecordCount') . '] records');
       }
+      return $result;
     }
   }
 
