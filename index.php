@@ -23,7 +23,7 @@ use robocloud\MessageProcessing\Transformer\KeepOriginalTransformer;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 // Create instance of the robocloud config.
-$config = new DefaultConfig();
+$config = new DefaultConfig('config/robocloud.yml');
 
 // Create event dispatcher instance.
 $event_dispatcher = new EventDispatcher();
