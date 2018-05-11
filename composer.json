@@ -1,5 +1,5 @@
 {
-    "name": "robomaze/robocloud",
+    "name": "martinhej/robocloud",
     "description": "Robocloud extension of AWS SDK for PHP for use with Kinesis and DynamoDB",
     "type": "library",
     "require": {
