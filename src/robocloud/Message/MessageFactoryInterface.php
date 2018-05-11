@@ -10,17 +10,6 @@ namespace robocloud\Message;
 interface MessageFactoryInterface {
 
   /**
-   * Sets the message class.
-   *
-   * @param string $class
-   *   The message class to be used when creating the message.
-   *
-   * @throws \robocloud\Exception\InvalidMessageClassException
-   *   When the provided class does not implement the MessageFactoryInterface.
-   */
-  public function setMessageClass($class);
-
-  /**
    * Message data to be used upon creation.
    *
    * @param array $data
@@ -58,8 +47,8 @@ interface MessageFactoryInterface {
    * @param mixed $serialized_message
    *   The serialized message.
    *
-   * @return array
-   *   The message data.
+   * @return \robocloud\Message\MessageInterface
+   *   The message object.
    *
    * @throws \InvalidArgumentException
    *   When the serialized message could not be unserialized.

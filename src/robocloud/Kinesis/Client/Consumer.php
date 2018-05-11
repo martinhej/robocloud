@@ -187,7 +187,7 @@ class Consumer extends AbstractKinesisClient implements ConsumerInterface {
           list($sequence_number, $message_data) = $event;
 
           try {
-            $records[$sequence_number] = $this->createMessage($message_data, $shardId, $behind_latest, $this->getStreamName());
+            $records[$sequence_number] = $this->getMessageFactory()->unserialize($message_data);
           }
           catch (\Exception $e) {
             $this->processError($e, $event);
@@ -291,37 +291,6 @@ class Consumer extends AbstractKinesisClient implements ConsumerInterface {
    */
   public function processError(\Exception $exception, array $data = []) {
     $this->getEventDispatcher()->dispatch(KinesisConsumerError::NAME, new KinesisConsumerError($exception, $data));
-  }
-
-  /**
-   * Creates the message object from the Kinesis stream data.
-   *
-   * @param string $message_data
-   *   Serialized message from Kinesis.
-   * @param string $shard_id
-   *   The shard id.
-   * @param int $lag
-   *   The milliseconds behind latests.
-   * @param string $stream_name
-   *   The Kinesis stream name.
-   *
-   * @return \robocloud\Message\MessageInterface
-   *   The message object.
-   *
-   * @throws \InvalidArgumentException
-   *   When the serialized message could not be unserialized.
-   * @throws \robocloud\Exception\InvalidMessageDataException
-   *   If a valid message could not be created from the provided data.
-   */
-  protected function createMessage($message_data, $shard_id, $lag, $stream_name) {
-
-    $message_data = $this->getMessageFactory()->unserialize($message_data);
-
-    $message_data['shardId'] = $shard_id;
-    $message_data['streamName'] = $stream_name;
-    $message_data['lag'] = $lag;
-
-    return $this->getMessageFactory()->setMessageData($message_data)->createMessage();
   }
 
   /**

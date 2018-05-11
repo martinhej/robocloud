@@ -23,10 +23,6 @@ interface MessageInterface extends \JsonSerializable {
 
   /**
    * High priority flag.
-   *
-   * Messages with this priority will be pushed to the stream immediately.
-   * Therefore use this priority level only for deletions or idempotent
-   * operations.
    */
   const PRIORITY_HIGH = 'high';
 

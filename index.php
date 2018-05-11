@@ -40,12 +40,12 @@ $event_dispatcher->addSubscriber(new DynamoDbErrorConsoleLogger());
  * Message producing example.
  */
 
-$message_factory = new MessageFactory($event_dispatcher);
+$message_factory = new MessageFactory(Message::class, $event_dispatcher);
 
 $robo_id = 'meteorology.garden.air-temperature.south1';
 $date = new \DateTime('now', new \DateTimeZone('UTC'));
 
-$message_factory->setMessageClass(Message::class)->setMessageData([
+$message_factory->setMessageData([
   'roboId' => $robo_id,
   'purpose' => 'meteorology.measurements.temperature',
   'data' => [
@@ -97,5 +97,7 @@ $consumer = new Consumer(
 );
 
 $consumer->consume(0);
+
+var_dump($consumer->getLag(), $consumer->getLastSequenceNumber());
 
 var_dump($keep_in_memory_backend->flush());

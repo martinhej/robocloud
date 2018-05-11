@@ -36,10 +36,13 @@ class MessageFactory implements MessageFactoryInterface {
   /**
    * MessageFactory constructor.
    *
+   * @param string $messageClass
+   *   The message class.
    * @param EventDispatcherInterface $eventDispatcher
    *   The event dispatcher object.
    */
-  public function __construct(EventDispatcherInterface $eventDispatcher) {
+  public function __construct($messageClass, EventDispatcherInterface $eventDispatcher) {
+    $this->messageClass = $messageClass;
     $this->eventDispatcher = $eventDispatcher;
   }
 
@@ -60,16 +63,7 @@ class MessageFactory implements MessageFactoryInterface {
       throw new \InvalidArgumentException('Could not unserialize the message data');
     }
 
-    return $result;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setMessageClass($class) {
-    $this->messageClass = $class;
-
-    return $this;
+    return $this->setMessageData($result)->createMessage();
   }
 
   /**
@@ -86,7 +80,7 @@ class MessageFactory implements MessageFactoryInterface {
    */
   public function createMessage() {
 
-    if (!in_array(MessageInterface::class, class_implements($this->messageClass))) {
+    if (!is_string($this->messageClass) || !in_array(MessageInterface::class, class_implements($this->messageClass))) {
       throw new InvalidMessageClassException('Invalid message class provided: ' . $this->messageClass);
     }
 
