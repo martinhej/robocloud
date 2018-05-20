@@ -12,51 +12,53 @@ use robocloud\Message\MessageInterface;
  *
  * @package robocloud\MessageProcessing\Transformer
  */
-class DynamoDbTransformer implements TransformerInterface {
+class DynamoDbTransformer implements TransformerInterface
+{
 
-  /**
-   * {@inheritdoc}
-   */
-  public function transformMessage(MessageInterface $message) {
-    $data = [
-      'roboId' => ['S' => $message->getRoboId()],
-      'messageId' => ['S' => $message->getMessageId()],
-      'messageTime' => ['S' => $message->getMessageTime()],
-      'priority' => ['S' => $message->getPriority()],
-      'purpose' => ['S' => $message->getPurpose()],
-    ];
+    /**
+     * {@inheritdoc}
+     */
+    public function transformMessage(MessageInterface $message)
+    {
+        $data = [
+            'roboId' => ['S' => $message->getRoboId()],
+            'messageId' => ['S' => $message->getMessageId()],
+            'messageTime' => ['S' => $message->getMessageTime()],
+            'priority' => ['S' => $message->getPriority()],
+            'purpose' => ['S' => $message->getPurpose()],
+        ];
 
-    if ($responseTo = $message->getResponseTo()) {
-      $data['responseTo']['S'] = $responseTo;
-    }
-
-    if ($recipientWildcard = $message->getRecipientWildcard()) {
-      $data['recipientWildcard']['S'] = $recipientWildcard;
-    }
-
-    if ($message_data = $message->getData()) {
-      foreach ($message_data as $key => $value) {
-        if (!empty($value)) {
-          $data['data']['M'][$key] = ['S' => (string) $value];
+        if ($responseTo = $message->getResponseTo()) {
+            $data['responseTo']['S'] = $responseTo;
         }
-      }
-    }
 
-    if ($recipients = $message->getRecipients()) {
-      foreach ($recipients as $recipient) {
-        $data['recipients']['L'][] = ['S' => (string) $recipient];
-      }
-    }
-
-    if ($tags = $message->getTags()) {
-      foreach ($tags as $tag) {
-        if (!empty($tag)) {
-          $data['tags']['L'][] = ['S' => (string) $tag];
+        if ($recipientWildcard = $message->getRecipientWildcard()) {
+            $data['recipientWildcard']['S'] = $recipientWildcard;
         }
-      }
-    }
 
-    return $data;
-  }
+        if ($message_data = $message->getData()) {
+            foreach ($message_data as $key => $value) {
+                if (!empty($value)) {
+                    $data['data']['M'][$key] = ['S' => (string)$value];
+                }
+            }
+        }
+
+        if ($recipients = $message->getRecipients()) {
+            foreach ($recipients as $recipient) {
+                $data['recipients']['L'][] = ['S' => (string)$recipient];
+            }
+        }
+
+        if ($tags = $message->getTags()) {
+            foreach ($tags as $tag) {
+                if (!empty($tag)) {
+                    $data['tags']['L'][] = ['S' => (string)$tag];
+                }
+            }
+        }
+
+        return $data;
+    }
 
 }

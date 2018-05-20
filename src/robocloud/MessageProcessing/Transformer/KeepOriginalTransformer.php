@@ -9,13 +9,15 @@ use robocloud\Message\MessageInterface;
  *
  * @package robocloud\MessageProcessing\Transformer
  */
-class KeepOriginalTransformer implements TransformerInterface {
+class KeepOriginalTransformer implements TransformerInterface
+{
 
-  /**
-   * {@inheritdoc}
-   */
-  public function transformMessage(MessageInterface $message) {
-    return $message;
-  }
+    /**
+     * {@inheritdoc}
+     */
+    public function transformMessage(MessageInterface $message)
+    {
+        return $message;
+    }
 
 }

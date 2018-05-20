@@ -4,31 +4,48 @@ namespace robocloud\Event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class DynamoDbInMemoryErrorLogger implements EventSubscriberInterface {
+/**
+ * Class DynamoDbInMemoryErrorLogger.
+ *
+ * @package robocloud\Event
+ */
+class DynamoDbInMemoryErrorLogger implements EventSubscriberInterface
+{
 
-  protected $errors = [];
+    /**
+     * @var array
+     */
+    protected $errors = [];
 
-  /**
-   * @param DynamoDbError $error
-   */
-  public function processError(DynamoDbError $error) {
-    $this->errors[] = [
-      'message' => $error->getException()->getMessage(),
-      'exception' => $error->getException(),
-    ];
-  }
+    /**
+     * @param DynamoDbError $error
+     */
+    public function processError(DynamoDbError $error)
+    {
+        $this->errors[] = [
+            'message' => $error->getException()->getMessage(),
+            'exception' => $error->getException(),
+        ];
+    }
 
-  /**
-   * {@inheritdoc}
-   */
-  public static function getSubscribedEvents() {
-    return [
-      DynamoDbError::NAME => 'processError',
-    ];
-  }
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            DynamoDbError::NAME => 'processError',
+        ];
+    }
 
-  public function getErrors() {
-    return $this->errors;
-  }
+    /**
+     * Gets logged errors.
+     *
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
 
 }

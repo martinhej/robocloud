@@ -1,55 +1,55 @@
 <?php
 
 namespace robocloud\Kinesis\Client;
-use robocloud\Message\MessageInterface;
 
 /**
  * Interface ClientInterface.
  *
  * @package robocloud\Kinesis\Client
  */
-interface ClientInterface {
+interface ClientInterface
+{
 
-  /**
-   * Gets the stream name.
-   *
-   * @return string
-   *   The stream name.
-   */
-  public function getStreamName();
+    /**
+     * Gets the stream name.
+     *
+     * @return string
+     *   The stream name.
+     */
+    public function getStreamName();
 
-  /**
-   * Gets the Kinesis client.
-   *
-   * @return \Aws\Kinesis\KinesisClient
-   *   The Kinesis client.
-   */
-  public function getClient();
+    /**
+     * Gets the Kinesis client.
+     *
+     * @return \Aws\Kinesis\KinesisClient
+     *   The Kinesis client.
+     */
+    public function getClient();
 
-  /**
-   * Gets shard ids.
-   *
-   * @return int[]
-   *   List of shard ids within the stream.
-   */
-  public function getShardIds();
+    /**
+     * Gets shard ids.
+     *
+     * @return int[]
+     *   List of shard ids within the stream.
+     */
+    public function getShardIds();
 
-  /**
-   * Processes an error.
-   *
-   * @param \Exception $exception
-   *   The exception.
-   * @param array $data
-   *   Data relevant to the error that occurred.
-   */
-  public function processError(\Exception $exception, array $data = []);
+    /**
+     * Processes an error.
+     *
+     * @param \Exception $exception
+     *   The exception.
+     * @param array $data
+     *   Data relevant to the error that occurred.
+     */
+    public function processError(\Exception $exception, array $data = []);
 
-  /**
-   * Gets the message factory.
-   *
-   * @return \robocloud\Message\MessageFactoryInterface
-   *   The message factory.
-   */
-  public function getMessageFactory();
+    /**
+     * Gets the message factory.
+     *
+     * @return \robocloud\Message\MessageFactoryInterface
+     *   The message factory.
+     */
+    public function getMessageFactory();
 
 }

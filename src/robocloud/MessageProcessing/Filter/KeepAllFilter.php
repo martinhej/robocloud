@@ -9,13 +9,15 @@ use robocloud\Message\MessageInterface;
  *
  * @package robocloud\MessageProcessing\Filter
  */
-class KeepAllFilter implements FilterInterface {
+class KeepAllFilter implements FilterInterface
+{
 
-  /**
-   * {@inheritdoc}
-   */
-  public function keepMessage(MessageInterface $message) {
-    return TRUE;
-  }
+    /**
+     * {@inheritdoc}
+     */
+    public function keepMessage(MessageInterface $message)
+    {
+        return TRUE;
+    }
 
 }

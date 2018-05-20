@@ -9,13 +9,15 @@ use robocloud\Message\MessageInterface;
  *
  * @package robocloud\MessageProcessing\Transformer
  */
-class JsonTransformer implements TransformerInterface {
+class JsonTransformer implements TransformerInterface
+{
 
-  /**
-   * {@inheritdoc}
-   */
-  public function transformMessage(MessageInterface $message) {
-    return json_encode($message);
-  }
+    /**
+     * {@inheritdoc}
+     */
+    public function transformMessage(MessageInterface $message)
+    {
+        return json_encode($message);
+    }
 
 }

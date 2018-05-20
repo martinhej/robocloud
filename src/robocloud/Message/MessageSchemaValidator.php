@@ -14,117 +14,141 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *
  * @package robocloud\Message
  */
-class MessageSchemaValidator implements MessageValidatorInterface, EventSubscriberInterface {
+class MessageSchemaValidator implements MessageValidatorInterface, EventSubscriberInterface
+{
 
-  /**
-   * The message to be validated.
-   *
-   * @var \robocloud\Message\MessageInterface
-   */
-  protected $message;
+    /**
+     * The message to be validated.
+     *
+     * @var \robocloud\Message\MessageInterface
+     */
+    protected $message;
 
-  /**
-   * @var ConfigInterface
-   */
-  protected $config;
+    /**
+     * @var ConfigInterface
+     */
+    protected $messageSchemaDir;
 
-  /**
-   * MessageSchemaValidator constructor.
-   *
-   * @param ConfigInterface $config
-   */
-  public function __construct(ConfigInterface $config) {
-    $this->config = $config;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validate(MessageComposedEvent $event) {
-
-    $message = $event->getMessage();
-
-    $schema = $this->getGeneralMessageSchema();
-    $message_data = $message->jsonSerialize();
-
-    foreach ($schema->required as $required_property) {
-      if (empty($message_data[$required_property])) {
-        throw new InvalidMessageDataException('The message from ' . $message->getRoboId() . ' is missing required property: ' . $required_property);
-      }
+    /**
+     * MessageSchemaValidator constructor.
+     *
+     * @param string $messge_schema_dir
+     */
+    public function __construct($messge_schema_dir)
+    {
+        $this->messageSchemaDir = $messge_schema_dir;
     }
 
-    $message_data_schema = $this->getMessageDataSchema($message);
+    /**
+     * {@inheritdoc}
+     */
+    public function validate(MessageComposedEvent $event)
+    {
 
-    foreach ($message_data_schema->required as $required_property) {
-      if (empty($message_data['data'][$required_property])) {
-        throw new InvalidMessageDataException('The message from ' . $message->getRoboId() . ' is missing required data: ' . $required_property);
-      }
-    }
-  }
+        $this->message = $event->getMessage();
 
-  /**
-   * {@inheritdoc}
-   */
-  public static function getSubscribedEvents() {
-    return [
-      MessageComposedEvent::NAME => 'validate',
-    ];
-  }
+        $schema = $this->getGeneralMessageSchema();
+        $message_data = $this->getMessage()->jsonSerialize();
 
-  /**
-   * Gets the general message schema.
-   *
-   * @return object
-   *   The general message schema.
-   */
-  protected function getGeneralMessageSchema() {
+        foreach ($schema->required as $required_property) {
+            if (empty($message_data[$required_property])) {
+                throw new InvalidMessageDataException('The message from ' . $this->getMessage()->getRoboId() . ' is missing required property: ' . $required_property);
+            }
+        }
 
-    $path = $this->config->getMessageSchemaDir() . '/message.' . $this->config->getMessageSchemaVersion() . '.schema.json';
+        $message_data_schema = $this->getMessageDataSchema();
 
-    if (file_exists($path)) {
-      $schema = json_decode(file_get_contents($path));
+        foreach ($message_data_schema->required as $required_property) {
+            if (empty($message_data['data'][$required_property])) {
+                throw new InvalidMessageDataException('The message from ' . $this->getMessage()->getRoboId() . ' is missing required data: ' . $required_property);
+            }
+        }
     }
 
-    if (empty($schema)) {
-      throw new \InvalidArgumentException('General message schema not found at ' . $path);
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            MessageComposedEvent::NAME => 'validate',
+        ];
     }
 
-    return $schema;
-  }
+    /**
+     * Gets the general message schema.
+     *
+     * @return object
+     *   The general message schema.
+     */
+    public function getGeneralMessageSchema()
+    {
 
-  /**
-   * Gets message schema.
-   *
-   * @param \robocloud\Message\MessageInterface $message
-   *   The Message object.
-   *
-   * @return object
-   *   The message data property schema.
-   */
-  protected function getMessageDataSchema(MessageInterface $message) {
-    $parts = explode('.', $message->getPurpose());
+        $path = $this->getMessageSchemaDir() . '/message.' . $this->getMessage()->getVersion() . '.schema.json';
 
-    if (count($parts) != 3) {
-      throw new \InvalidArgumentException('The message "purpose" property should consist of three parts delimited by the dot (.) character');
+        if (file_exists($path)) {
+            $schema = json_decode(file_get_contents($path));
+        }
+
+        if (empty($schema)) {
+            throw new \InvalidArgumentException('General message schema not found at ' . $path);
+        }
+
+        return $schema;
     }
 
-    $file_name = $parts[2] . '.schema.json';
+    /**
+     * Gets message schema.
+     *
+     * @return object
+     *   The message data property schema.
+     */
+    public function getMessageDataSchema()
+    {
+        $parts = explode('.', $this->getMessage()->getPurpose());
 
-    $path =
-      $this->config->getMessageSchemaDir() . '/' . $this->config->getMessageSchemaVersion() . '/' .
-      $parts[0] . '/' .
-      $parts[1] . '/' .
-      $file_name;
+        if (count($parts) != 3) {
+            throw new \InvalidArgumentException('The message "purpose" property should consist of three parts delimited by the dot (.) character');
+        }
 
-    if (file_exists($path)) {
-      $schema = json_decode(file_get_contents($path));
+        $file_name = $parts[2] . '.schema.json';
+
+        $path =
+            $this->getMessageSchemaDir() . '/' . $this->getMessage()->getVersion() . '/' .
+            $parts[0] . '/' .
+            $parts[1] . '/' .
+            $file_name;
+
+        if (file_exists($path)) {
+            $schema = json_decode(file_get_contents($path));
+        }
+
+        if (empty($schema)) {
+            throw new \InvalidArgumentException('Message schema not found: ' . $path);
+        }
+
+        return $schema;
     }
 
-    if (empty($schema)) {
-      throw new \InvalidArgumentException('Message schema not found: ' . $path);
+    /**
+     * Gets the message schema directory.
+     *
+     * @return string
+     *   The message schema directory.
+     */
+    public function getMessageSchemaDir()
+    {
+        return $this->messageSchemaDir;
     }
 
-    return $schema;
-  }
+    /**
+     * Gets the message.
+     *
+     * @return MessageInterface
+     *   The message to be validated.
+     */
+    public function getMessage() {
+        return $this->message;
+    }
 
 }

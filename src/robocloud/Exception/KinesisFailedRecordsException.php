@@ -2,6 +2,12 @@
 
 namespace robocloud\Exception;
 
-class KinesisFailedRecordsException extends \Exception {
+/**
+ * Class KinesisFailedRecordsException.
+ *
+ * @package robocloud\Exception
+ */
+class KinesisFailedRecordsException extends \Exception
+{
 
 }

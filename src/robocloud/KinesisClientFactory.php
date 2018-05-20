@@ -11,48 +11,56 @@ use robocloud\Config\ConfigInterface;
  *
  * @package robocloud
  */
-class KinesisClientFactory {
+class KinesisClientFactory
+{
 
-  protected $config;
+    /**
+     * @var string
+     */
+    protected $apiVersion;
 
-  /**
-   * KinesisClientFactory constructor.
-   *
-   * @param ConfigInterface $config
-   */
-  public function __construct(ConfigInterface $config) {
-    $this->config = $config;
-  }
+    /**
+     * @var string
+     */
+    protected $region;
 
-  /**
-   * Gets the Kinesis client.
-   *
-   * @param string $type
-   *   Either "producer" or "consumer".
-   *
-   * @return \Aws\Kinesis\KinesisClient
-   */
-  public function getKinesisClient($type) {
-    $config = [
-      'version' => $this->config->getKinesisApiVersion(),
-      'region' => $this->config->getKinesisRegion(),
-    ];
-
-    if ($type == 'producer') {
-      $config['credentials'] = [
-        'key'    => $this->config->getKinesisProducerKey(),
-        'secret' => $this->config->getKinesisProducerSecret(),
-      ];
-    }
-    elseif ($type == 'consumer') {
-      $config['credentials'] = [
-        'key'    => $this->config->getKinesisConsumerKey(),
-        'secret' => $this->config->getKinesisConsumerSecret(),
-      ];
+    /**
+     * KinesisClientFactory constructor.
+     *
+     * @param string $api_version
+     *   The Kinesis API version.
+     * @param string $region
+     *   The AWS region.
+     */
+    public function __construct($api_version, $region)
+    {
+        $this->apiVersion = $api_version;
+        $this->region = $region;
     }
 
-    $sdk = new Sdk();
-    return $sdk->createKinesis($config);
-  }
+    /**
+     * Gets the Kinesis client.
+     *
+     * @param string $key
+     *   The IAM user key.
+     * @param string $secret
+     *   The IAM user secret.
+     *
+     * @return \Aws\Kinesis\KinesisClient
+     */
+    public function getKinesisClient($key, $secret) {
+        $config = [
+            'version' => $this->apiVersion,
+            'region' => $this->region,
+        ];
+
+        $config['credentials'] = [
+            'key' => $key,
+            'secret' => $secret,
+        ];
+
+        $sdk = new Sdk();
+        return $sdk->createKinesis($config);
+    }
 
 }

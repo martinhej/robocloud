@@ -15,7 +15,7 @@ class KinesisProducerErrorConsoleLogger implements EventSubscriberInterface {
    * @param KinesisProducerError $error
    */
   public function processError(KinesisProducerError $error) {
-    var_dump('=== Kinesis Producer ERROR ===', $error->getException()->getMessage(), '=== ===');
+    var_dump('=== Kinesis Producer ERROR ===', $error->getException()->getMessage(), '=== ERROR END ===');
   }
 
   /**

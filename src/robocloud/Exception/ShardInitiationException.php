@@ -2,6 +2,12 @@
 
 namespace robocloud\Exception;
 
-class ShardInitiationException extends \Exception {
+/**
+ * Class ShardInitiationException.
+ *
+ * @package robocloud\Exception
+ */
+class ShardInitiationException extends \Exception
+{
 
 }

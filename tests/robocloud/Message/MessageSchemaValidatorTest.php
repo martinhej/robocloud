@@ -2,43 +2,48 @@
 
 namespace robocloud\Tests\Message;
 
+use PHPUnit\Framework\TestCase;
+use robocloud\Config\ConfigInterface;
+use robocloud\Config\DefaultConfig;
 use robocloud\Message\Message;
+use robocloud\Message\MessageFactory;
 use robocloud\Message\MessageFactoryInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use robocloud\Message\MessageSchemaValidator;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class MessageSchemaValidatorTest.
  *
  * @package robomaze\robocloud\Test\Message
  */
-class MessageSchemaValidatorTest extends KernelTestCase {
+class MessageSchemaValidatorTest extends TestCase
+{
 
-  /**
-   * @var MessageFactoryInterface
-   */
-  private $messageFactory;
+    /**
+     * @var MessageFactoryInterface
+     */
+    protected $messageFactory;
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp() {
-    $kernel = static::createKernel();
-    $kernel->boot();
+    protected $eventDispatcher;
 
-    self::$container = $kernel->getContainer();
+    protected $config;
 
-    $this->messageFactory = self::$container->get('robocloud.message.factory');
-  }
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        $this->eventDispatcher = new EventDispatcher();
+        $this->messageFactory = new MessageFactory(Message::class, $this->eventDispatcher);
+    }
 
-  public function testCorrectSchemaValidation() {
-    $this->messageFactory->setMessageClass(Message::class);
-    $this->messageFactory->setMessageData([]);
+    public function testCorrectSchemaValidation()
+    {
+        $schema_validator = new MessageSchemaValidator(__DIR__ . '/../../../schema/stream/robocloud/message');
 
-    $message = $this->messageFactory->createMessage();
+        $schema = $schema_validator->getGeneralMessageSchema();
 
-    var_dump($message);
-
-    $this->assertTrue(true);
-  }
+        $this->assertEquals($schema->title, 'robomessage');
+    }
 
 }

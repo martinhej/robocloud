@@ -4,31 +4,48 @@ namespace robocloud\Event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class KinesisConsumerInMemoryErrorLogger implements EventSubscriberInterface {
+/**
+ * Class KinesisConsumerInMemoryErrorLogger.
+ *
+ * @package robocloud\Event
+ */
+class KinesisConsumerInMemoryErrorLogger implements EventSubscriberInterface
+{
 
-  protected $errors = [];
+    /**
+     * @var array
+     */
+    protected $errors = [];
 
-  /**
-   * @param KinesisConsumerError $error
-   */
-  public function processError(KinesisConsumerError $error) {
-    $this->errors[] = [
-      'message' => $error->getException()->getMessage(),
-      'exception' => $error->getException(),
-    ];
-  }
+    /**
+     * @param KinesisConsumerError $error
+     */
+    public function processError(KinesisConsumerError $error)
+    {
+        $this->errors[] = [
+            'message' => $error->getException()->getMessage(),
+            'exception' => $error->getException(),
+        ];
+    }
 
-  /**
-   * {@inheritdoc}
-   */
-  public static function getSubscribedEvents() {
-    return [
-      KinesisConsumerError::NAME => 'processError',
-    ];
-  }
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            KinesisConsumerError::NAME => 'processError',
+        ];
+    }
 
-  public function getErrors() {
-    return $this->errors;
-  }
+    /**
+     * Gets logged errors.
+     *
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
 
 }

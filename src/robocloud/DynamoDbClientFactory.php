@@ -3,33 +3,68 @@
 namespace robocloud;
 
 use Aws\Sdk;
-use robocloud\Config\ConfigInterface;
 
-class DynamoDbClientFactory {
+/**
+ * Class DynamoDbClientFactory.
+ *
+ * @package robocloud
+ */
+class DynamoDbClientFactory
+{
 
-  protected $config;
+    /**
+     * @var string
+     */
+    protected $apiVersion;
 
-  /**
-   * KinesisClientFactory constructor.
-   *
-   * @param ConfigInterface $config
-   */
-  public function __construct(ConfigInterface $config) {
-    $this->config = $config;
-  }
+    /**
+     * @var string
+     */
+    protected $region;
 
-  public function getDynamoDbClient() {
-    $config = [
-      'version'     => $this->config->getDynamoDbApiVersion(),
-      'region'      => $this->config->getDynamoDbRegion(),
-      'credentials' => [
-        'key'    => $this->config->getKinesisConsumerKey(),
-        'secret' => $this->config->getKinesisConsumerSecret(),
-      ]
-    ];
+    /**
+     * @var string
+     */
+    protected $key;
 
-    $sdk = new Sdk();
-    return $sdk->createDynamoDb($config);
-  }
+    /**
+     * @var string
+     */
+    protected $secret;
+
+    /**
+     * KinesisClientFactory constructor.
+     *
+     * @param string $api_version
+     *   The Kinesis API version.
+     * @param string $region
+     *   The AWS region.
+     * @param string $key
+     *   The IAM user key.
+     * @param string $secret
+     *   The IAM user secret.
+     */
+    public function __construct($api_version, $region, $key, $secret)
+    {
+        $this->apiVersion = $api_version;
+        $this->region = $region;
+        $this->key = $key;
+        $this->secret = $secret;
+    }
+
+    public function getDynamoDbClient()
+    {
+        $config = [
+            'version' => $this->apiVersion,
+            'region' => $this->region,
+            'credentials' => [
+                'key' => $this->key,
+                'secret' => $this->secret,
+            ]
+        ];
+
+        $sdk = new Sdk();
+        return $sdk->createDynamoDb($config);
+    }
 
 }

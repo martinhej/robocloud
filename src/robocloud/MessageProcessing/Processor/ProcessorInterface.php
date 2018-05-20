@@ -1,6 +1,7 @@
 <?php
 
 namespace robocloud\MessageProcessing\Processor;
+
 use robocloud\Event\MessagesConsumedEvent;
 
 /**
@@ -11,13 +12,14 @@ use robocloud\Event\MessagesConsumedEvent;
  *
  * @package robocloud\MessageProcessing\Processor
  */
-interface ProcessorInterface {
+interface ProcessorInterface
+{
 
-  /**
-   * Filters, transforms and writes the provided messages.
-   *
-   * @param MessagesConsumedEvent $event
-   */
-  public function processMessages(MessagesConsumedEvent $event);
+    /**
+     * Filters, transforms and writes the provided messages.
+     *
+     * @param MessagesConsumedEvent $event
+     */
+    public function processMessages(MessagesConsumedEvent $event);
 
 }

@@ -5,37 +5,52 @@ namespace robocloud\Event;
 use robocloud\Message\MessageInterface;
 use Symfony\Component\EventDispatcher\Event;
 
-class KinesisProducerError extends Event {
+/**
+ * Class KinesisProducerError.
+ *
+ * @package robocloud\Event
+ */
+class KinesisProducerError extends Event
+{
 
-  const NAME = 'robocloud.kinesis_producer.error';
+    const NAME = 'robocloud.kinesis_producer.error';
 
-  /**
-   * @var \Exception
-   */
-  protected $exception;
+    /**
+     * @var \Exception
+     */
+    protected $exception;
 
-  /**
-   * @var MessageInterface[]
-   */
-  protected $messages = [];
+    /**
+     * @var MessageInterface[]
+     */
+    protected $messages = [];
 
-  public function __construct(\Exception $e, array $messages) {
-    $this->exception = $e;
-    $this->messages = $messages;
-  }
+    /**
+     * KinesisProducerError constructor.
+     *
+     * @param \Exception $e
+     * @param array $messages
+     */
+    public function __construct(\Exception $e, array $messages)
+    {
+        $this->exception = $e;
+        $this->messages = $messages;
+    }
 
-  /**
-   * @return \Exception
-   */
-  public function getException() {
-    return $this->exception;
-  }
+    /**
+     * @return \Exception
+     */
+    public function getException()
+    {
+        return $this->exception;
+    }
 
-  /**
-   * @return MessageInterface[]
-   */
-  public function getMessages() {
-    return $this->messages;
-  }
+    /**
+     * @return MessageInterface[]
+     */
+    public function getMessages()
+    {
+        return $this->messages;
+    }
 
 }

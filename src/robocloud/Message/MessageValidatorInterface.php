@@ -9,16 +9,17 @@ use robocloud\Event\MessageComposedEvent;
  *
  * @package robocloud\Message
  */
-interface MessageValidatorInterface {
+interface MessageValidatorInterface
+{
 
-  /**
-   * Validates message.
-   *
-   * @param MessageComposedEvent $event
-   *
-   * @throws \robocloud\Exception\InvalidMessageDataException
-   *   When validation fails.
-   */
-  public function validate(MessageComposedEvent $event);
+    /**
+     * Validates message.
+     *
+     * @param MessageComposedEvent $event
+     *
+     * @throws \robocloud\Exception\InvalidMessageDataException
+     *   When validation fails.
+     */
+    public function validate(MessageComposedEvent $event);
 
 }

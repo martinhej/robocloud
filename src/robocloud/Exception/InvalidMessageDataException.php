@@ -7,6 +7,7 @@ namespace robocloud\Exception;
  *
  * @package robocloud\Exception
  */
-class InvalidMessageDataException extends \Exception {
+class InvalidMessageDataException extends \Exception
+{
 
 }

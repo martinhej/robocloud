@@ -9,44 +9,48 @@ use robocloud\Message\MessageInterface;
  *
  * @package robocloud\MessageProcessing\Filter
  */
-class FilterByPurpose implements FilterInterface {
+class FilterByPurpose implements FilterInterface
+{
 
-  /**
-   * The Message purpose.
-   *
-   * @var string
-   */
-  protected $purpose;
+    /**
+     * The Message purpose.
+     *
+     * @var string
+     */
+    protected $purpose;
 
-  /**
-   * FilterByPurpose constructor.
-   *
-   * @param string $purpose
-   *   The Message purpose.
-   */
-  public function __construct($purpose) {
-    $this->purpose = $purpose;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function keepMessage(MessageInterface $message) {
-    if ($message->getPurpose() == $this->getPurpose()) {
-      return TRUE;
+    /**
+     * FilterByPurpose constructor.
+     *
+     * @param string $purpose
+     *   The Message purpose.
+     */
+    public function __construct($purpose)
+    {
+        $this->purpose = $purpose;
     }
 
-    return FALSE;
-  }
+    /**
+     * {@inheritdoc}
+     */
+    public function keepMessage(MessageInterface $message)
+    {
+        if ($message->getPurpose() == $this->getPurpose()) {
+            return TRUE;
+        }
 
-  /**
-   * Gets the Message purpose.
-   *
-   * @return string
-   *   The Message purpose.
-   */
-  public function getPurpose() {
-    return $this->purpose;
-  }
+        return FALSE;
+    }
+
+    /**
+     * Gets the Message purpose.
+     *
+     * @return string
+     *   The Message purpose.
+     */
+    public function getPurpose()
+    {
+        return $this->purpose;
+    }
 
 }
