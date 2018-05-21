@@ -24,9 +24,12 @@ class DynamoDbTransformer implements TransformerInterface
             'roboId' => ['S' => $message->getRoboId()],
             'messageId' => ['S' => $message->getMessageId()],
             'messageTime' => ['S' => $message->getMessageTime()],
-            'priority' => ['S' => $message->getPriority()],
             'purpose' => ['S' => $message->getPurpose()],
         ];
+
+        if ($priority = $message->getPriority()) {
+            $data['priority']['S'] = $priority;
+        }
 
         if ($responseTo = $message->getResponseTo()) {
             $data['responseTo']['S'] = $responseTo;

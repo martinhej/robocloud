@@ -43,7 +43,7 @@ class Message implements MessageInterface
      *
      * @var string
      */
-    public $priority = self::PRIORITY_MEDIUM;
+    public $priority;
 
     /**
      * The message labels.
@@ -199,14 +199,9 @@ class Message implements MessageInterface
             'version' => $this->getVersion(),
             'roboId' => $this->getRoboId(),
             'messageId' => $this->getMessageId(),
-            'priority' => $this->getPriority(),
             'purpose' => $this->getPurpose(),
-            'tags' => $this->getTags(),
             'messageTime' => $this->getMessageTime(),
             'data' => $this->getData(),
-            'responseTo' => $this->getResponseTo(),
-            'recipients' => $this->getRecipients(),
-            'recipientWildcard' => $this->getRecipientWildcard(),
         ];
 
         if (empty($messageData['messageTime'])) {
@@ -216,6 +211,26 @@ class Message implements MessageInterface
 
         if (empty($messageData['messageId'])) {
             $messageData['messageId'] = sha1(serialize($messageData));
+        }
+
+        if ($priority = $this->getPriority()) {
+            $messageData['priority'] = $priority;
+        }
+
+        if ($tags = $this->getTags()) {
+            $messageData['tags'] = $tags;
+        }
+
+        if ($response_to = $this->getResponseTo()) {
+            $messageData['responseTo'] = $response_to;
+        }
+
+        if ($recipients = $this->getRecipients()) {
+            $messageData['recipients'] = $recipients;
+        }
+
+        if ($wildcard = $this->getRecipientWildcard()) {
+            $messageData['recipientWildcard'] = $wildcard;
         }
 
         return $messageData;
