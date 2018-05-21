@@ -25,7 +25,7 @@ class MessageSchemaValidator implements MessageValidatorInterface, EventSubscrib
     protected $message;
 
     /**
-     * @var ConfigInterface
+     * @var string
      */
     protected $messageSchemaDir;
 
@@ -102,13 +102,15 @@ class MessageSchemaValidator implements MessageValidatorInterface, EventSubscrib
      *
      * @return object
      *   The message data property schema.
+     *
+     * @throws InvalidMessageDataException
      */
     public function getMessageDataSchema()
     {
         $parts = explode('.', $this->getMessage()->getPurpose());
 
         if (count($parts) != 3) {
-            throw new \InvalidArgumentException('The message "purpose" property should consist of three parts delimited by the dot (.) character');
+            throw new InvalidMessageDataException('The message "purpose" property should consist of three parts delimited by the dot (.) character');
         }
 
         $file_name = $parts[2] . '.schema.json';
@@ -124,7 +126,7 @@ class MessageSchemaValidator implements MessageValidatorInterface, EventSubscrib
         }
 
         if (empty($schema)) {
-            throw new \InvalidArgumentException('Message schema not found: ' . $path);
+            throw new InvalidMessageDataException('Message schema not found: ' . $path);
         }
 
         return $schema;
