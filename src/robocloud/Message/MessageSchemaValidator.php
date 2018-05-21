@@ -2,7 +2,6 @@
 
 namespace robocloud\Message;
 
-use robocloud\Config\ConfigInterface;
 use robocloud\Event\MessageComposedEvent;
 use robocloud\Exception\InvalidMessageDataException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -126,7 +125,7 @@ class MessageSchemaValidator implements MessageValidatorInterface, EventSubscrib
         }
 
         if (empty($schema)) {
-            throw new InvalidMessageDataException('Message schema not found: ' . $path);
+            throw new InvalidMessageDataException('Could not find message with purpose "' . $this->getMessage()->getPurpose() . '"');
         }
 
         return $schema;
