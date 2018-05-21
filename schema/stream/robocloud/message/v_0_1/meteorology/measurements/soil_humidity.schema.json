@@ -1,11 +1,11 @@
 {
-  "$schema": "http://robomaze.io/message/v_0_1/meteorology/measurements/temperature/schema#",
-  "title": "Temperature",
+  "$schema": "http://robomaze.io/message/v_0_1/meteorology/measurements/soil_humidity/schema#",
+  "title": "Soil Humidity",
   "description": "",
   "type": "object",
   "properties": {
     "value": {
-      "description": "The current temperature.",
+      "description": "The current soil humidity.",
       "type": "string"
     },
     "unit": {
