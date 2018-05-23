@@ -102,9 +102,9 @@ abstract class AbstractKinesisClient implements ClientInterface
 
         $res = $this->getClient()->describeStream(['StreamName' => $this->getStreamName()]);
         $shard_ids = $res->search('StreamDescription.Shards[].ShardId');
-        // Cache shard_ids for half an hour as overuse of the describeStream
+        // Cache shard_ids for a day as overuse of the describeStream
         // resource results in LimitExceededException error.
-        $this->cache->set($key, $shard_ids, 1800);
+        $this->cache->set($key, $shard_ids, 86400);
 
         return $shard_ids;
     }
