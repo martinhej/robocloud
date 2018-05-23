@@ -3,6 +3,7 @@
 namespace robocloud\Kinesis\Client;
 
 use Aws\Kinesis\KinesisClient;
+use Psr\SimpleCache\CacheInterface;
 use robocloud\Event\KinesisConsumerError;
 use robocloud\Event\MessagesConsumedEvent;
 use robocloud\Exception\ShardInitiationException;
@@ -94,11 +95,12 @@ class Consumer extends AbstractKinesisClient implements ConsumerInterface
      * @param string $streamName
      * @param MessageFactoryInterface $messageFactory
      * @param EventDispatcherInterface $eventDispatcher
+     * @param CacheInterface $cache
      * @param ConsumerRecoveryInterface $consumerRecovery
      */
-    public function __construct(KinesisClient $client, $streamName, MessageFactoryInterface $messageFactory, EventDispatcherInterface $eventDispatcher, ConsumerRecoveryInterface $consumerRecovery)
+    public function __construct(KinesisClient $client, $streamName, MessageFactoryInterface $messageFactory, EventDispatcherInterface $eventDispatcher, CacheInterface $cache, ConsumerRecoveryInterface $consumerRecovery)
     {
-        parent::__construct($client, $streamName, $messageFactory, $eventDispatcher);
+        parent::__construct($client, $streamName, $messageFactory, $eventDispatcher, $cache);
 
         $this->consumerRecovery = $consumerRecovery;
     }

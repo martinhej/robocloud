@@ -108,16 +108,20 @@ class MessageSchemaValidator implements MessageValidatorInterface, EventSubscrib
     {
         $parts = explode('.', $this->getMessage()->getPurpose());
 
-        if (count($parts) != 3) {
-            throw new InvalidMessageDataException('The message "purpose" property should consist of three parts delimited by the dot (.) character');
+        if (empty($parts)) {
+            throw new InvalidMessageDataException('The message "purpose" property should clearly define specific message schema');
         }
 
-        $file_name = $parts[2] . '.schema.json';
+        $file_name = array_pop($parts) . '.schema.json';
+
+        $directories = '';
+        if (!empty($parts)) {
+            $directories = implode('/', $parts) . '/';
+        }
 
         $path =
             $this->getMessageSchemaDir() . '/' . $this->getMessage()->getVersion() . '/' .
-            $parts[0] . '/' .
-            $parts[1] . '/' .
+            $directories .
             $file_name;
 
         if (file_exists($path)) {

@@ -2,6 +2,7 @@
 
 namespace robocloud\Kinesis\Client;
 
+use Psr\SimpleCache\CacheInterface;
 use robocloud\Message\MessageFactoryInterface;
 use Aws\Kinesis\KinesisClient;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -39,6 +40,11 @@ abstract class AbstractKinesisClient implements ClientInterface
     protected $eventDispatcher;
 
     /**
+     * @var CacheInterface
+     */
+    protected $cache;
+
+    /**
      * AbstractClient constructor.
      *
      * @param \Aws\Kinesis\KinesisClient $client
@@ -47,13 +53,15 @@ abstract class AbstractKinesisClient implements ClientInterface
      *   The stream name.
      * @param MessageFactoryInterface $messageFactory
      * @param EventDispatcherInterface $eventDispatcher
+     * @param CacheInterface $cache
      */
-    public function __construct(KinesisClient $client, $streamName, MessageFactoryInterface $messageFactory, EventDispatcherInterface $eventDispatcher)
+    public function __construct(KinesisClient $client, $streamName, MessageFactoryInterface $messageFactory, EventDispatcherInterface $eventDispatcher, CacheInterface $cache)
     {
         $this->client = $client;
         $this->streamName = $streamName;
         $this->messageFactory = $messageFactory;
         $this->eventDispatcher = $eventDispatcher;
+        $this->cache = $cache;
     }
 
     /**
@@ -86,8 +94,19 @@ abstract class AbstractKinesisClient implements ClientInterface
      */
     public function getShardIds()
     {
+        $key = $this->getStreamName() . '.shard_ids';
+
+        if ($this->cache->has($key)) {
+            return $this->cache->get($key);
+        }
+
         $res = $this->getClient()->describeStream(['StreamName' => $this->getStreamName()]);
-        return $res->search('StreamDescription.Shards[].ShardId');
+        $shard_ids = $res->search('StreamDescription.Shards[].ShardId');
+        // Cache shard_ids for half an hour as overuse of the describeStream
+        // resource results in LimitExceededException error.
+        $this->cache->set($key, $shard_ids, 1800);
+
+        return $shard_ids;
     }
 
     /**

@@ -24,9 +24,10 @@ class MessageSchemaValidatorTest extends TestCase
      */
     protected $messageFactory;
 
+    /**
+     * @var EventDispatcher
+     */
     protected $eventDispatcher;
-
-    protected $config;
 
     /**
      * {@inheritdoc}
