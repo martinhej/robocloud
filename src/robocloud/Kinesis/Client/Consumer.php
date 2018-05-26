@@ -128,36 +128,31 @@ class Consumer extends AbstractKinesisClient implements ConsumerInterface
             $last_sequence_number = $this->getConsumerRecovery()->getLastSequenceNumber($shard_id);
         }
 
-        $start = time();
+        $messages = $this->getMessages($shard_id, $last_sequence_number, $runTime);
 
-        do {
-            $messages = $this->getMessages($shard_id, $last_sequence_number);
+        // Do not bother when we do not receive any records.
+        if (!empty($messages)) {
+            $last_sequence_number = $this->getLastSequenceNumber();
 
-            // Do not bother when we do not receive any records.
-            if (!empty($messages)) {
-                $last_sequence_number = $this->getLastSequenceNumber();
-
-                try {
-                    $this->getEventDispatcher()->dispatch(MessagesConsumedEvent::NAME, new MessagesConsumedEvent($messages));
-                } catch (\Exception $e) {
-                    $this->processError($e, $messages);
-                }
-
-                $this->getConsumerRecovery()->storeLastSuccessPosition($this->getLastShardId(), $last_sequence_number);
+            try {
+                $this->getEventDispatcher()->dispatch(MessagesConsumedEvent::NAME, new MessagesConsumedEvent($messages));
+            } catch (\Exception $e) {
+                $this->processError($e, $messages);
             }
 
-            usleep(self::WAIT_UTIME_BEFORE_NEXT_READ);
+            $this->getConsumerRecovery()->storeLastSuccessPosition($this->getLastShardId(), $last_sequence_number);
+        }
 
-        } while (!empty($messages) && ($start + $runTime) > time());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMessages($shardId = NULL, $lastSequenceNumber = NULL)
+    public function getMessages($shardId = NULL, $lastSequenceNumber = NULL, $runTime = 0)
     {
 
         $records = [];
+        $start = time();
 
         // Get the initial iterator.
         try {
@@ -171,6 +166,9 @@ class Consumer extends AbstractKinesisClient implements ConsumerInterface
             return $records;
         }
 
+        // Keep running until we have next shard iterator and we are not at
+        // the latest record and (we are not over the run time or we have not
+        // yet received any records).
         do {
 
             $has_records = FALSE;
@@ -202,7 +200,11 @@ class Consumer extends AbstractKinesisClient implements ConsumerInterface
                 $this->processError($e);
             }
 
-        } while (!empty($shard_iterator) && !empty($behind_latest) && !$has_records);
+            // @todo - the purpose of this is not to drain the CPU much,
+            // the question is if does what is expected.
+            usleep(self::WAIT_UTIME_BEFORE_NEXT_READ);
+
+        } while (!empty($shard_iterator) && !empty($behind_latest) && (($start + $runTime) > time() || !$has_records));
 
         if (!empty($sequence_number)) {
             $this->lastSequenceNumber = $sequence_number;
