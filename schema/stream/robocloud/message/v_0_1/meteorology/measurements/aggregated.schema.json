@@ -4,6 +4,19 @@
   "description": "",
   "type": "object",
   "properties": {
+    "temperature": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "A general temperature measure.",
+          "type": "string"
+        },
+        "unit": {
+          "description": "The unit of the value.",
+          "type": "string"
+        }
+      }
+    },
     "atm_pressure": {
       "type": "object",
       "properties": {
@@ -48,6 +61,19 @@
       "properties": {
         "value": {
           "description": "The current soil humidity.",
+          "type": "string"
+        },
+        "unit": {
+          "description": "The unit of the value.",
+          "type": "string"
+        }
+      }
+    },
+    "soil_temperature": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The current soil temperature.",
           "type": "string"
         },
         "unit": {
