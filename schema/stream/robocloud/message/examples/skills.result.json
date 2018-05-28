@@ -1,0 +1,19 @@
+{
+  "messages":
+  [
+    {
+      "version":"v_0_1",
+      "roboId":"roboticmouse",
+      "purpose":"skills.result",
+      "data":{
+        "result":[
+          {"sensor.front.value": "13.7"},
+          {"sensor.left.value": "2.6"},
+          {"sensor.right.value": "5.9"}
+        ]
+      },
+      "responseTo": "a24219f5605d5ace4247c747bb7845f7bc07e5ca",
+      "recipients": ["mazesolver"]
+    }
+  ]
+}

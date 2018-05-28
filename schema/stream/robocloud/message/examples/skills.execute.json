@@ -1,0 +1,23 @@
+{
+  "messages":
+  [
+    {
+      "version":"v_0_1",
+      "roboId":"mazesolver",
+      "messageId": "a24219f5605d5ace4247c747bb7845f7bc07e5ca",
+      "messageTime": "2018-05-28T08:36:59+0000",
+      "purpose":"skills.execute",
+      "data":{
+        "skills":[
+          {"motor.left": "stop"},
+          {"motor.right": "stop"},
+          {"sensor.front.read": "value.return"},
+          {"sensor.left.read": "value.return"},
+          {"sensor.right.read": "value.return"}
+        ]
+      },
+      "responseTo": "dcb7772b4639e9626e4f9a2c006b171bef871047",
+      "recipients": ["roboticmouse"]
+    }
+  ]
+}

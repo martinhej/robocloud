@@ -1,0 +1,17 @@
+{
+  "$schema": "http://robomaze.io/message/v_0_1/skills/result/schema#",
+  "title": "Skills execution result",
+  "description": "The result of the skills execution.",
+  "type": "object",
+  "properties": {
+    "results": {
+      "description": "The list of skills execution results.",
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["results"]
+}
