@@ -109,10 +109,12 @@ class Consumer extends AbstractKinesisClient implements ConsumerInterface
      * Consumes messages from Kinesis.
      *
      * @param int $shardPosition
+     *   The position of the shard from which the reading is to be done.
      * @param int $runTime
      *   Time period in seconds for how long the consume process should run.
      *
      * @throws \robocloud\Exception\ShardInitiationException
+     *   When no shard found at the position provided.
      */
     public function consume($shardPosition, $runTime = 0)
     {
