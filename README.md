@@ -12,6 +12,12 @@ solving robots cooperation or targeting single or more robots with
 a specific set of instructions to be executed. So do not hesitate 
 to use it for your experimental robotic fun projects!!! :)
 
+The functionality is built on top of the AWS Kinesis stream service: 
+https://aws.amazon.com/kinesis/. In case you are not familiar with Kinesis
+first learn more about it. Yes, the plan is to decouple robocloud from
+Kinesis in future. But as mentioned, currently the project is highly
+experimental, being in the process of prototyping. 
+
 ## The high overview
 The idea is to provide an infrastructure where two or more systems may
 communicate in all directions so that they can not only exchange
