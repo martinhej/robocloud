@@ -105,7 +105,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return $this->version;
     }
@@ -113,7 +113,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getRoboId()
+    public function getRoboId(): string
     {
         return $this->roboId;
     }
@@ -121,7 +121,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getMessageId()
+    public function getMessageId(): string
     {
         return $this->messageId;
     }
@@ -129,7 +129,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getPurpose()
+    public function getPurpose(): string
     {
         return $this->purpose;
     }
@@ -137,7 +137,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getPriority()
+    public function getPriority(): ?string
     {
         return $this->priority;
     }
@@ -145,7 +145,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getTags()
+    public function getTags(): ?array
     {
         return $this->tags;
     }
@@ -153,7 +153,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getMessageTime()
+    public function getMessageTime(): string
     {
         return $this->messageTime;
     }
@@ -161,7 +161,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getData()
+    public function getData(): ?array
     {
         return $this->data;
     }
@@ -169,7 +169,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getResponseTo()
+    public function getResponseTo(): ?string
     {
         return $this->responseTo;
     }
@@ -177,7 +177,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getRecipients()
+    public function getRecipients(): ?array
     {
         return $this->recipients;
     }
@@ -185,7 +185,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getRecipientWildcard()
+    public function getRecipientWildcard(): ?string
     {
         return $this->recipientsWildcard;
     }
@@ -193,7 +193,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $messageData = [
             'version' => $this->getVersion(),

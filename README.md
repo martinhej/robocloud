@@ -174,12 +174,11 @@ $kinesis_factory = new KinesisClientFactory('2013-12-02', 'eu-west-1');
 $cache = new FilesystemCache();
 
 // Provide the recovery object used to store last read position.
-$consumer_recovery = new ConsumerRecovery($stream_name, '/tmp/consumer_recovery.rec');
+$consumer_recovery = new ConsumerRecovery($stream_name, 'Shard-000001', '/tmp/consumer_recovery.rec');
 
 // Instantiate the consumer and consume messages from Kinesis stream.
 $consumer = new Consumer(
     $kinesis_factory->getKinesisClient('AKIAINK5P33X2KBK2RAQ', 'EuUdvE7WW0SKaEpGWMWHvN5M+gIjGaoLAVTYzzhV'),
-    $stream_name,
     $message_factory,
     $event_dispatcher,
     $cache,

@@ -6,14 +6,12 @@ use robocloud\Message\MessageInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class MessagesConsumedEvent.
- *
- * @package robocloud\Event
+ * Fired when messages are consumed from a stream.
  */
 class MessagesConsumedEvent extends Event
 {
 
-    const NAME = 'robocloud.kinesis_consumer.messages_consumed';
+    const NAME = 'robocloud.consumer.messages_consumed';
 
     /**
      * @var MessageInterface[]

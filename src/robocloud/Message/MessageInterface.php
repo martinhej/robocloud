@@ -33,7 +33,7 @@ interface MessageInterface extends \JsonSerializable
      * @return string
      *   The message version.
      */
-    public function getVersion();
+    public function getVersion(): string;
 
     /**
      * Gets the robot id that emitted the message.
@@ -43,7 +43,7 @@ interface MessageInterface extends \JsonSerializable
      * @return string
      *   The robot id.
      */
-    public function getRoboId();
+    public function getRoboId(): string;
 
     /**
      * Gets the unique identifier of the message.
@@ -53,7 +53,7 @@ interface MessageInterface extends \JsonSerializable
      * @return string
      *   Namespaced message identification.
      */
-    public function getMessageId();
+    public function getMessageId(): string;
 
     /**
      * Gets the message purpose.
@@ -61,7 +61,7 @@ interface MessageInterface extends \JsonSerializable
      * @return string
      *   The message purpose.
      */
-    public function getPurpose();
+    public function getPurpose(): string;
 
     /**
      * Gets message tags.
@@ -69,7 +69,7 @@ interface MessageInterface extends \JsonSerializable
      * @return array
      *   Arbitrary set of labels relevant to the specific message.
      */
-    public function getTags();
+    public function getTags(): ?array;
 
     /**
      * Gets the message time.
@@ -77,15 +77,15 @@ interface MessageInterface extends \JsonSerializable
      * @return string
      *   The message time.
      */
-    public function getMessageTime();
+    public function getMessageTime(): string;
 
     /**
      * Gets the message data.
      *
-     * @return mixed
+     * @return array
      *   The message data.
      */
-    public function getData();
+    public function getData(): ?array;
 
     /**
      * Gets the message priority.
@@ -93,7 +93,7 @@ interface MessageInterface extends \JsonSerializable
      * @return string
      *   One of the self::PRIORITY_* constants.
      */
-    public function getPriority();
+    public function getPriority(): ?string;
 
     /**
      * Gets the response to origin.
@@ -101,7 +101,7 @@ interface MessageInterface extends \JsonSerializable
      * @return string
      *   The origin of the message that this is response to.
      */
-    public function getResponseTo();
+    public function getResponseTo(): ?string;
 
     /**
      * Gets the list of robo-ids of recipients.
@@ -109,7 +109,7 @@ interface MessageInterface extends \JsonSerializable
      * @return array
      *   The robo-ids of recipients.
      */
-    public function getRecipients();
+    public function getRecipients(): ?array;
 
     /**
      * Gets the recipients wildcard.
@@ -117,6 +117,6 @@ interface MessageInterface extends \JsonSerializable
      * @return string
      *   The recipients wildcard.
      */
-    public function getRecipientWildcard();
+    public function getRecipientWildcard(): ?string;
 
 }

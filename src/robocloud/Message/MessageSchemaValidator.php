@@ -26,16 +26,16 @@ class MessageSchemaValidator implements MessageValidatorInterface, EventSubscrib
     /**
      * @var string
      */
-    protected $messageSchemaDir;
+    protected $schemaDiscovery;
 
     /**
      * MessageSchemaValidator constructor.
      *
-     * @param string $messge_schema_dir
+     * @param SchemaDiscovery $discovery
      */
-    public function __construct($messge_schema_dir)
+    public function __construct(SchemaDiscovery $discovery)
     {
-        $this->messageSchemaDir = $messge_schema_dir;
+        $this->schemaDiscovery = $discovery;
     }
 
     /**
@@ -44,22 +44,22 @@ class MessageSchemaValidator implements MessageValidatorInterface, EventSubscrib
     public function validate(MessageComposedEvent $event)
     {
 
-        $this->message = $event->getMessage();
+        $message = $event->getMessage();
 
-        $schema = $this->getGeneralMessageSchema();
-        $message_data = $this->getMessage()->jsonSerialize();
+        $schema = $this->schemaDiscovery->getGeneralMessageSchema();
+        $message_data = $message->jsonSerialize();
 
         foreach ($schema->required as $required_property) {
             if (empty($message_data[$required_property])) {
-                throw new InvalidMessageDataException('The message from ' . $this->getMessage()->getRoboId() . ' is missing required property: ' . $required_property);
+                throw new InvalidMessageDataException('The message from ' . $message->getRoboId() . ' is missing required property: ' . $required_property);
             }
         }
 
-        $message_data_schema = $this->getMessageDataSchema();
+        $message_data_schema = $this->schemaDiscovery->getMessageDataSchema($message);
 
         foreach ($message_data_schema->required as $required_property) {
             if (empty($message_data['data'][$required_property])) {
-                throw new InvalidMessageDataException('The message from ' . $this->getMessage()->getRoboId() . ' is missing required data: ' . $required_property);
+                throw new InvalidMessageDataException('The message from ' . $message->getRoboId() . ' is missing required data: ' . $required_property);
             }
         }
     }
@@ -72,88 +72,6 @@ class MessageSchemaValidator implements MessageValidatorInterface, EventSubscrib
         return [
             MessageComposedEvent::NAME => 'validate',
         ];
-    }
-
-    /**
-     * Gets the general message schema.
-     *
-     * @return object
-     *   The general message schema.
-     */
-    public function getGeneralMessageSchema()
-    {
-
-        $path = $this->getMessageSchemaDir() . '/message.' . $this->getMessage()->getVersion() . '.schema.json';
-
-        if (file_exists($path)) {
-            $schema = json_decode(file_get_contents($path));
-        }
-
-        if (empty($schema)) {
-            throw new \InvalidArgumentException('General message schema not found at ' . $path);
-        }
-
-        return $schema;
-    }
-
-    /**
-     * Gets message schema.
-     *
-     * @return object
-     *   The message data property schema.
-     *
-     * @throws InvalidMessageDataException
-     */
-    public function getMessageDataSchema()
-    {
-        $parts = explode('.', $this->getMessage()->getPurpose());
-
-        if (empty($parts)) {
-            throw new InvalidMessageDataException('The message "purpose" property should clearly define specific message schema');
-        }
-
-        $file_name = array_pop($parts) . '.schema.json';
-
-        $directories = '';
-        if (!empty($parts)) {
-            $directories = implode('/', $parts) . '/';
-        }
-
-        $path =
-            $this->getMessageSchemaDir() . '/' . $this->getMessage()->getVersion() . '/' .
-            $directories .
-            $file_name;
-
-        if (file_exists($path)) {
-            $schema = json_decode(file_get_contents($path));
-        }
-
-        if (empty($schema)) {
-            throw new InvalidMessageDataException('Could not find message with purpose "' . $this->getMessage()->getPurpose() . '"');
-        }
-
-        return $schema;
-    }
-
-    /**
-     * Gets the message schema directory.
-     *
-     * @return string
-     *   The message schema directory.
-     */
-    public function getMessageSchemaDir()
-    {
-        return $this->messageSchemaDir;
-    }
-
-    /**
-     * Gets the message.
-     *
-     * @return MessageInterface
-     *   The message to be validated.
-     */
-    public function getMessage() {
-        return $this->message;
     }
 
 }

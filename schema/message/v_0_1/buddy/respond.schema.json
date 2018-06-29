@@ -1,0 +1,13 @@
+{
+  "$schema": "http://robomaze.io/message/v_0_1/buddy/respond/schema#",
+  "title": "Your new buddy",
+  "description": "A response to the request finding a buddy.",
+  "type": "object",
+  "properties": {
+    "introduction": {
+      "description": "Possibility to introduce.",
+      "type": "string"
+    }
+  },
+  "required": []
+}

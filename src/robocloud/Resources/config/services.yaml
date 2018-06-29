@@ -1,0 +1,62 @@
+
+services:
+
+    robocloud.event_dispatcher:
+        public: true
+        class: Symfony\Component\EventDispatcher\EventDispatcher
+
+    robocloud.cache:
+        public: true
+        class: Symfony\Component\Cache\Simple\FilesystemCache
+
+    robocloud.schema_discovery:
+        class: robocloud\Message\SchemaDiscovery
+        arguments:
+            $container: "@service_container"
+            $cache: "@robocloud.cache"
+
+    robocloud.schema_validator:
+        class: robocloud\Message\MessageSchemaValidator
+        arguments:
+            $discovery: "@robocloud.schema_discovery"
+
+    robocloud.message_factory:
+        class: robocloud\Message\MessageFactory
+        arguments:
+            $message_class: "%robocloud.message_class"
+            $event_dispatcher: "@robocloud.event_dispatcher"
+
+    robocloud.kinesis_client:
+        class: robocloud\Kinesis\RobocloudKinesisClient
+        arguments:
+            $container: "@service_container"
+
+    robocloud.consumer_recovery.kinesis:
+        class: robocloud\Kinesis\KinesisConsumerRecovery
+        arguments:
+            $stream_mame: "%robocloud.stream_name"
+            $consumer_recovery_file: "%robocloud.kinesis.consumer.recovery_file"
+
+    robocloud.consumer.kinesis:
+        class: robocloud\Kinesis\Consumer
+        arguments:
+            $client: "@robocloud.kinesis_client"
+            $message_factory: "@robocloud.message_factory"
+            $event_dispatcher: "@robocloud.event_dispatcher"
+            $cache: "@robocloud.cache"
+            $consumer_recovery: "@robocloud.consumer_recovery.kinesis"
+
+    robocloud.producer.kinesis:
+        public: true
+        class: robocloud\Kinesis\Producer
+        arguments:
+            $client: "@robocloud.kinesis_client"
+            $stream_name: "%robocloud.stream_name"
+            $message_factory: "@robocloud.message_factory"
+            $event_dispatcher: "@robocloud.event_dispatcher"
+            $cache: "@robocloud.cache"
+
+    robocloud.dyamodb:
+        class: robocloud\DynamoDb\RobocloudDynamoDbClientFactory
+        arguments:
+            $container: "@service_container"

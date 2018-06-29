@@ -18,7 +18,7 @@ interface MessageFactoryInterface
      *
      * @return $this
      */
-    public function setMessageData(array $data);
+    public function setMessageData(array $data): MessageFactoryInterface;
 
     /**
      * Creates the message instance.
@@ -29,7 +29,7 @@ interface MessageFactoryInterface
      * @throws \robocloud\Exception\InvalidMessageDataException
      *   If a valid message could not be created from the provided data.
      */
-    public function createMessage();
+    public function createMessage(): MessageInterface;
 
     /**
      * Serializes the message into format to be pushed into the Kinesis stream.
@@ -54,6 +54,6 @@ interface MessageFactoryInterface
      * @throws \InvalidArgumentException
      *   When the serialized message could not be unserialized.
      */
-    public function unserialize($serialized_message);
+    public function unserialize($serialized_message): MessageInterface;
 
 }

@@ -37,15 +37,15 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * MessageFactory constructor.
      *
-     * @param string $messageClass
+     * @param string $message_class
      *   The message class.
-     * @param EventDispatcherInterface $eventDispatcher
+     * @param EventDispatcherInterface $event_dispatcher
      *   The event dispatcher object.
      */
-    public function __construct($messageClass, EventDispatcherInterface $eventDispatcher)
+    public function __construct($message_class, EventDispatcherInterface $event_dispatcher)
     {
-        $this->messageClass = $messageClass;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->messageClass = $message_class;
+        $this->eventDispatcher = $event_dispatcher;
     }
 
     /**
@@ -59,7 +59,7 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized_message)
+    public function unserialize($serialized_message): MessageInterface
     {
         $result = json_decode($serialized_message, TRUE);
 
@@ -73,7 +73,7 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function setMessageData(array $data)
+    public function setMessageData(array $data): MessageFactoryInterface
     {
         $this->messageData = $data;
 
@@ -83,7 +83,7 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createMessage()
+    public function createMessage(): MessageInterface
     {
 
         if (!is_string($this->messageClass) || !in_array(MessageInterface::class, class_implements($this->messageClass))) {
@@ -91,22 +91,11 @@ class MessageFactory implements MessageFactoryInterface
         }
 
         /** @var \robocloud\Message\MessageInterface $message */
-        $message = new $this->messageClass($this->getData());
+        $message = new $this->messageClass($this->messageData);
         $messageComposedEvent = new MessageComposedEvent($message);
         $this->eventDispatcher->dispatch(MessageComposedEvent::NAME, $messageComposedEvent);
 
         return $message;
-    }
-
-    /**
-     * Gets the data using which the message object will be instantiated.
-     *
-     * @return array
-     *   The message data.
-     */
-    public function getData()
-    {
-        return $this->messageData;
     }
 
 }

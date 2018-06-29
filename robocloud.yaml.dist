@@ -1,0 +1,41 @@
+robocloud:
+    # The name of the Kinesis stream.
+    stream_name: 'robocloud'
+
+    # Where the message schema files are located.
+    message_schema_dirs:
+        - '/where/the/schema/files/are'
+        - '/where/more/schemas/are'
+    # The message class to be used.
+    message_class: 'robocloud\Message\Message'
+
+    # Amazon Kinesis.
+    kinesis:
+
+        # The Kinesis API version.
+        api_version: '2013-12-02'
+        # The Kinesis region.
+        region: 'eu-west-1'
+
+        # Kinesis Consumer configuration.
+        consumer:
+            # The Consumer recover file path.
+            recovery_file: '/tmp/consumer_recovery.rec'
+            # The AWS IAM Consumer user key.
+            key: 'THEKEY'
+            # The AWS IAM Consumer user secret.
+            secret: 'THESECRET'
+
+        # Kinesis Producer configuration.
+        producer:
+            # The AWS IAM Producer user key.
+            key: 'THEKEY'
+            # The AWS IAM Producer user key.
+            secret: 'THESECRET'
+
+    # DynamoDB configuration.
+    dynamodb:
+        # The DynamoDB API version.
+        api_version: '2012-08-10'
+        # The DynamoDB region.
+        region: 'eu-west-1'
