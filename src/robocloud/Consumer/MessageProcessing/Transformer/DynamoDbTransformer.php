@@ -33,7 +33,7 @@ class DynamoDbTransformer implements TransformerInterface
             $data['responseTo']['S'] = $responseTo;
         }
 
-        if ($recipientWildcard = $message->getRecipientWildcard()) {
+        if ($recipientWildcard = $message->getRecipientsWildcard()) {
             $data['recipientWildcard']['S'] = $recipientWildcard;
         }
 

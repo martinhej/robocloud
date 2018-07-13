@@ -5,6 +5,7 @@ namespace robocloud\Tests\Message;
 use PHPUnit\Framework\TestCase;
 use robocloud\Message\Message;
 use robocloud\Message\SchemaDiscovery;
+use Symfony\Component\Cache\Simple\ArrayCache;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
@@ -23,7 +24,7 @@ class MessageSchemaDiscoveryTest extends TestCase
             'robocloud' => ['message_schema_dirs' => []],
         ]));
 
-        $cache = new FilesystemCache();
+        $cache = new ArrayCache();
 
         $schema_discovery = new SchemaDiscovery($container, $cache);
 
@@ -42,7 +43,7 @@ class MessageSchemaDiscoveryTest extends TestCase
             ]],
         ]));
 
-        $cache = new FilesystemCache();
+        $cache = new ArrayCache();
 
         $schema_discovery = new SchemaDiscovery($container, $cache);
 
@@ -67,5 +68,30 @@ class MessageSchemaDiscoveryTest extends TestCase
         $schema = $schema_discovery->getMessageDataSchema($message);
 
         $this->assertEquals('Your new buddy', $schema->title);
+    }
+
+    /**
+     * @expectedException \robocloud\Exception\InvalidMessageDataException
+     * @expectedExceptionMessage Could not find message with purpose "buddy.find"
+     */
+    public function testMessageSchemaDiscoveryBadVersion() {
+        $container = new Container(new ParameterBag([
+            'robocloud' => ['message_schema_dirs' => [
+                __DIR__ . '/../../../schema/message'
+            ]],
+        ]));
+
+        $cache = new ArrayCache();
+
+        $schema_discovery = new SchemaDiscovery($container, $cache);
+
+        $message = new Message([
+            'version' => 'bad-version',
+            'roboId' => 'robo.test',
+            'purpose' => 'buddy.find',
+            'data' => ['reason' => 'Lost in space'],
+        ]);
+
+        $schema_discovery->getMessageDataSchema($message);
     }
 }

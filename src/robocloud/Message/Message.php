@@ -100,6 +100,10 @@ class Message implements MessageInterface
                 $this->{$key} = $value;
             }
         }
+
+        if (empty($this->messageId)) {
+            $this->messageId = sha1(serialize($this));
+        }
     }
 
     /**
@@ -185,7 +189,7 @@ class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getRecipientWildcard(): ?string
+    public function getRecipientsWildcard(): ?string
     {
         return $this->recipientsWildcard;
     }
@@ -209,10 +213,6 @@ class Message implements MessageInterface
             $messageData['messageTime'] = $date->format(\DateTime::ISO8601);
         }
 
-        if (empty($messageData['messageId'])) {
-            $messageData['messageId'] = sha1(serialize($messageData));
-        }
-
         if ($priority = $this->getPriority()) {
             $messageData['priority'] = $priority;
         }
@@ -229,7 +229,7 @@ class Message implements MessageInterface
             $messageData['recipients'] = $recipients;
         }
 
-        if ($wildcard = $this->getRecipientWildcard()) {
+        if ($wildcard = $this->getRecipientsWildcard()) {
             $messageData['recipientWildcard'] = $wildcard;
         }
 

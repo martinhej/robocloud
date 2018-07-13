@@ -80,9 +80,13 @@ class SchemaDiscovery implements SchemaDiscoveryInterface
             $purpose_dirs = implode(DIRECTORY_SEPARATOR, $parts);
         }
 
-        $schema_dirs = array_map(function($dir) use ($purpose_dirs, $message) {
-            return $dir . DIRECTORY_SEPARATOR . $message->getVersion() . DIRECTORY_SEPARATOR . $purpose_dirs;
-        }, $this->schemaDirs);
+        $schema_dirs = array_filter(array_map(function($dir) use ($purpose_dirs, $message) {
+            $schema_dir = $dir . DIRECTORY_SEPARATOR . $message->getVersion() . DIRECTORY_SEPARATOR . $purpose_dirs;
+            if (file_exists($schema_dir)) {
+                return $schema_dir;
+            }
+            return NULL;
+        }, $this->schemaDirs));
 
         $file_locator = new FileLocator($schema_dirs);
 

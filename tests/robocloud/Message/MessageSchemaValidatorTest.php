@@ -3,18 +3,13 @@
 namespace robocloud\Tests\Message;
 
 use PHPUnit\Framework\TestCase;
-use robocloud\Config\ConfigInterface;
-use robocloud\Config\DefaultConfig;
 use robocloud\Event\MessageComposedEvent;
 use robocloud\Message\Message;
-use robocloud\Message\MessageFactory;
-use robocloud\Message\MessageFactoryInterface;
 use robocloud\Message\MessageSchemaValidator;
 use robocloud\Message\SchemaDiscovery;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Cache\Simple\ArrayCache;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -39,7 +34,7 @@ class MessageSchemaValidatorTest extends TestCase
             ]],
         ]));
 
-        $cache = new FilesystemCache();
+        $cache = new ArrayCache();
 
         $this->schemaDiscovery = new SchemaDiscovery($container, $cache);
     }

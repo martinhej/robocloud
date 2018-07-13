@@ -117,6 +117,6 @@ interface MessageInterface extends \JsonSerializable
      * @return string
      *   The recipients wildcard.
      */
-    public function getRecipientWildcard(): ?string;
+    public function getRecipientsWildcard(): ?string;
 
 }
