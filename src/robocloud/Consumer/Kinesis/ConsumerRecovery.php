@@ -2,8 +2,8 @@
 
 namespace robocloud\Consumer\Kinesis;
 
+use robocloud\Consumer\ConsumerRecoveryInterface;
 use robocloud\Exception\ConsumerRecoveryException;
-use robocloud\Kinesis\ConsumerRecoveryInterface;
 
 /**
  * Class ConsumerRecovery.

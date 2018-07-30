@@ -4,11 +4,11 @@ namespace robocloud\Consumer\Kinesis;
 
 use Psr\SimpleCache\CacheInterface;
 use robocloud\Consumer\ConsumerInterface;
+use robocloud\Consumer\ConsumerRecoveryInterface;
 use robocloud\Event\Kinesis\KinesisConsumerError;
 use robocloud\Event\MessagesConsumedEvent;
 use robocloud\Exception\ShardInitiationException;
 use robocloud\Kinesis\AbstractKinesisService;
-use robocloud\Kinesis\ConsumerRecoveryInterface;
 use robocloud\Kinesis\RobocloudKinesisClient;
 use robocloud\Message\MessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

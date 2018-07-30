@@ -1,6 +1,6 @@
 <?php
 
-namespace robocloud\Kinesis;
+namespace robocloud\Consumer;
 
 /**
  * Consumer recovery to store and retrieve last read position.
