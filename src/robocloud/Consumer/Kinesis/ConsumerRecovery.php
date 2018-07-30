@@ -1,10 +1,9 @@
 <?php
 
-namespace robocloud\Kinesis;
+namespace robocloud\Consumer\Kinesis;
 
-use robocloud\Config\ConfigInterface;
 use robocloud\Exception\ConsumerRecoveryException;
-use robocloud\Exception\ShardInitiationException;
+use robocloud\Kinesis\ConsumerRecoveryInterface;
 
 /**
  * Class ConsumerRecovery.

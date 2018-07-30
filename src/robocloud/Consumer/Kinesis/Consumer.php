@@ -8,7 +8,6 @@ use robocloud\Event\Kinesis\KinesisConsumerError;
 use robocloud\Event\MessagesConsumedEvent;
 use robocloud\Exception\ShardInitiationException;
 use robocloud\Kinesis\AbstractKinesisService;
-use robocloud\Kinesis\ConsumerRecovery;
 use robocloud\Kinesis\ConsumerRecoveryInterface;
 use robocloud\Kinesis\RobocloudKinesisClient;
 use robocloud\Message\MessageFactoryInterface;
@@ -185,7 +184,7 @@ class Consumer extends AbstractKinesisService implements ConsumerInterface
                 // Get the Shard iterator for next batch.
                 $shard_iterator = $res->get('NextShardIterator');
                 $behind_latest = $res->get('MillisBehindLatest');
-var_dump($behind_latest);
+
                 foreach ($res->search('Records[].[SequenceNumber, Data]') as $event) {
                     list($sequence_number, $message_data) = $event;
 
