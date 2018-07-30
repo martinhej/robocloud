@@ -51,7 +51,7 @@ class MessageSchemaValidator implements MessageValidatorInterface, EventSubscrib
 
         foreach ($schema->required as $required_property) {
             if (empty($message_data[$required_property])) {
-                throw new InvalidMessageDataException('The message from ' . $message->getRoboId() . ' is missing required property: ' . $required_property);
+                throw new InvalidMessageDataException('The message with purpose ' . $message->getPurpose() . ' is missing required property: ' . $required_property);
             }
         }
 
@@ -59,7 +59,7 @@ class MessageSchemaValidator implements MessageValidatorInterface, EventSubscrib
 
         foreach ($message_data_schema->required as $required_property) {
             if (empty($message_data['data'][$required_property])) {
-                throw new InvalidMessageDataException('The message from ' . $message->getRoboId() . ' is missing required data: ' . $required_property);
+                throw new InvalidMessageDataException('The message with purpose ' . $message->getPurpose() . ' is missing required data: ' . $required_property);
             }
         }
     }

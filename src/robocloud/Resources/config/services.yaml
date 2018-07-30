@@ -2,11 +2,9 @@
 services:
 
     robocloud.event_dispatcher:
-        public: true
         class: Symfony\Component\EventDispatcher\EventDispatcher
 
     robocloud.cache:
-        public: true
         class: Symfony\Component\Cache\Simple\FilesystemCache
 
     robocloud.schema_discovery:
@@ -32,13 +30,13 @@ services:
             $container: "@service_container"
 
     robocloud.consumer_recovery.kinesis:
-        class: robocloud\Kinesis\KinesisConsumerRecovery
+        class: robocloud\Consumer\Kinesis\ConsumerRecovery
         arguments:
             $stream_mame: "%robocloud.stream_name"
             $consumer_recovery_file: "%robocloud.kinesis.consumer.recovery_file"
 
     robocloud.consumer.kinesis:
-        class: robocloud\Kinesis\Consumer
+        class: robocloud\Consumer\Kinesis\Consumer
         arguments:
             $client: "@robocloud.kinesis_client"
             $message_factory: "@robocloud.message_factory"
@@ -47,7 +45,6 @@ services:
             $consumer_recovery: "@robocloud.consumer_recovery.kinesis"
 
     robocloud.producer.kinesis:
-        public: true
         class: robocloud\Kinesis\Producer
         arguments:
             $client: "@robocloud.kinesis_client"

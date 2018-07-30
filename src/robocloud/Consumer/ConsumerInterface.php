@@ -11,21 +11,12 @@ interface ConsumerInterface
 {
 
     /**
-     * Sets consumer data needed for proper function.
-     *
-     * @param array $data
-     *   The consumer data.
-     *
-     * @return ConsumerInterface
-     */
-    public function setConsumerData(array $data): ConsumerInterface;
-
-    /**
      * Consumes messages from a stream.
      *
-     * @param int $runTime
+     * @param int $run_time
+     * @param string $shard_id
      */
-    public function consume($runTime = 0);
+    public function consume(int $run_time = 0, string $shard_id);
 
     /**
      * Gets number of milliseconds of the last record being behind latest.
@@ -33,6 +24,6 @@ interface ConsumerInterface
      * @return int
      *   Milliseconds behind latest.
      */
-    public function getLag();
+    public function getLag(): int;
 
 }

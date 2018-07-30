@@ -3,10 +3,9 @@
 namespace robocloud\Tests\Message;
 
 use PHPUnit\Framework\TestCase;
-use robocloud\Message\Message;
+use robocloud\Message\RoboMessage;
 use robocloud\Message\SchemaDiscovery;
 use Symfony\Component\Cache\Simple\ArrayCache;
-use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
@@ -47,7 +46,7 @@ class MessageSchemaDiscoveryTest extends TestCase
 
         $schema_discovery = new SchemaDiscovery($container, $cache);
 
-        $message = new Message([
+        $message = new RoboMessage([
             'version' => 'v_0_1',
             'roboId' => 'robo.test',
             'purpose' => 'buddy.find',
@@ -58,7 +57,7 @@ class MessageSchemaDiscoveryTest extends TestCase
 
         $this->assertEquals('Find buddy', $schema->title);
 
-        $message = new Message([
+        $message = new RoboMessage([
             'version' => 'v_0_1',
             'roboId' => 'robo.help.test',
             'purpose' => 'buddy.respond',
@@ -85,7 +84,7 @@ class MessageSchemaDiscoveryTest extends TestCase
 
         $schema_discovery = new SchemaDiscovery($container, $cache);
 
-        $message = new Message([
+        $message = new RoboMessage([
             'version' => 'bad-version',
             'roboId' => 'robo.test',
             'purpose' => 'buddy.find',

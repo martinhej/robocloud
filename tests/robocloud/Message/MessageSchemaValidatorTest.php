@@ -4,7 +4,7 @@ namespace robocloud\Tests\Message;
 
 use PHPUnit\Framework\TestCase;
 use robocloud\Event\MessageComposedEvent;
-use robocloud\Message\Message;
+use robocloud\Message\RoboMessage;
 use robocloud\Message\MessageSchemaValidator;
 use robocloud\Message\SchemaDiscovery;
 use Symfony\Component\Cache\Simple\ArrayCache;
@@ -49,7 +49,7 @@ class MessageSchemaValidatorTest extends TestCase
 
         $this->assertTrue(in_array(EventSubscriberInterface::class, class_implements($schema_validator)));
 
-        $message = new Message([
+        $message = new RoboMessage([
           'messageId' => '123',
           'version' => 'v_0_1',
           'messageTime' => '',
@@ -65,13 +65,13 @@ class MessageSchemaValidatorTest extends TestCase
 
     /**
      * @expectedException \robocloud\Exception\InvalidMessageDataException
-     * @expectedExceptionMessage The message from test is missing required data: reason
+     * @expectedExceptionMessage The message with purpose buddy.find is missing required data: reason
      */
     public function testMissingRequiredData()
     {
         $schema_validator = new MessageSchemaValidator($this->schemaDiscovery);
 
-        $message = new Message([
+        $message = new RoboMessage([
           'messageId' => '123',
           'version' => 'v_0_1',
           'messageTime' => '',
@@ -91,7 +91,7 @@ class MessageSchemaValidatorTest extends TestCase
     {
         $schema_validator = new MessageSchemaValidator($this->schemaDiscovery);
 
-        $message = new Message([
+        $message = new RoboMessage([
           'messageId' => '123',
           'version' => 'v_0_1',
           'messageTime' => '',

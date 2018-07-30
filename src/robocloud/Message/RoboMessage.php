@@ -7,7 +7,7 @@ namespace robocloud\Message;
  *
  * @package robocloud\Message
  */
-class Message implements MessageInterface
+class RoboMessage implements RoboMessageInterface
 {
 
     /**

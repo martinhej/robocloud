@@ -3,7 +3,7 @@
 namespace robocloud\Tests\Message;
 
 use PHPUnit\Framework\TestCase;
-use robocloud\Message\Message;
+use robocloud\Message\RoboMessage;
 use robocloud\Message\MessageFactory;
 use robocloud\Message\MessageSchemaValidator;
 use robocloud\Message\SchemaDiscovery;
@@ -27,7 +27,7 @@ class MessageFactoryTest extends TestCase
     public function setUp()
     {
         $this->eventDispatcher = new EventDispatcher();
-        $this->messageFactory = new MessageFactory(Message::class, $this->eventDispatcher);
+        $this->messageFactory = new MessageFactory(RoboMessage::class, $this->eventDispatcher);
     }
 
     public function testSimpleMessageCreation()

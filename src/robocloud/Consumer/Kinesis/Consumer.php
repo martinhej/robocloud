@@ -1,27 +1,22 @@
 <?php
 
-namespace robocloud\Kinesis;
+namespace robocloud\Consumer\Kinesis;
 
-use Aws\Kinesis\KinesisClient;
 use Psr\SimpleCache\CacheInterface;
 use robocloud\Consumer\ConsumerInterface;
 use robocloud\Event\Kinesis\KinesisConsumerError;
 use robocloud\Event\MessagesConsumedEvent;
 use robocloud\Exception\ShardInitiationException;
+use robocloud\Kinesis\AbstractKinesisService;
+use robocloud\Kinesis\ConsumerRecovery;
+use robocloud\Kinesis\ConsumerRecoveryInterface;
+use robocloud\Kinesis\RobocloudKinesisClient;
 use robocloud\Message\MessageFactoryInterface;
-use robocloud\Message\MessageInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Class Consumer.
+ * Consumes messages from a Kinesis stream.
  *
- * The client to read records from Amazon Kinesis Stream. The main functions of
- * this class are:
- * - provide a way to continue at the last read record
- * - skip Kinesis Stream results having empty Records
- * - convert Kinesis Stream results to objects of the type MessageInterface.
- *
- * @package robocloud\Kinesis
  */
 class Consumer extends AbstractKinesisService implements ConsumerInterface
 {
@@ -64,10 +59,10 @@ class Consumer extends AbstractKinesisService implements ConsumerInterface
      *
      * @var int
      */
-    protected $lag;
+    protected $lag = 0;
 
     /**
-     * @var ConsumerRecoveryInterface
+     * @var ConsumerRecovery
      */
     protected $consumerRecovery;
 
@@ -93,49 +88,44 @@ class Consumer extends AbstractKinesisService implements ConsumerInterface
     /**
      * Consumer constructor.
      *
-     * @param KinesisClient $client
+     * @param RobocloudKinesisClient $client
+     * @param string $stream_name
      * @param MessageFactoryInterface $message_factory
      * @param EventDispatcherInterface $event_dispatcher
      * @param CacheInterface $cache
      * @param ConsumerRecoveryInterface $consumer_recovery
      */
-    public function __construct(KinesisClient $client, MessageFactoryInterface $message_factory, EventDispatcherInterface $event_dispatcher, CacheInterface $cache, ConsumerRecoveryInterface $consumer_recovery)
+    public function __construct(RobocloudKinesisClient $client, string $stream_name, MessageFactoryInterface $message_factory, EventDispatcherInterface $event_dispatcher, CacheInterface $cache, ConsumerRecoveryInterface $consumer_recovery)
     {
         $this->consumerRecovery = $consumer_recovery;
-        parent::__construct($client, $this->getConsumerRecovery()->getStreamName(), $message_factory, $event_dispatcher, $cache);
+        parent::__construct($client, $stream_name, $message_factory, $event_dispatcher, $cache);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setConsumerData(array $data): ConsumerInterface
-    {
-        $this->getConsumerRecovery()->setConsumerData($data);
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function consume($runTime = 0)
+    public function consume(int $run_time = 0, string $shard_id = NULL)
     {
         $shards_ids = $this->getShardIds();
-        $shard_id = $this->getConsumerRecovery()->getShardId();
-        if (!in_array($shard_id, $shards_ids)) {
+        if (!empty($shard_id) && !in_array($shard_id, $shards_ids)) {
             throw new ShardInitiationException('Invalid shard id provided: ' . $shard_id);
         }
+        else {
+            $shard_id = reset($shards_ids);
+        }
+
+        $this->consumerRecovery->setShardId($shard_id);
 
         $last_sequence_number = NULL;
         $start = time();
 
-        if ($this->getConsumerRecovery()->hasRecoveryData()) {
-            $last_sequence_number = $this->getConsumerRecovery()->getLastSequenceNumber();
+        if ($this->consumerRecovery->hasRecoveryData()) {
+            $last_sequence_number = $this->consumerRecovery->getLastSuccessPosition();
         }
 
         do {
-            $messages = $this->getMessages($shard_id, $last_sequence_number, $runTime);
+            $messages = $this->getMessages($shard_id, $last_sequence_number);
 
-            // Do not bother when we do not receive any records.
             if (!empty($messages)) {
                 $last_sequence_number = $this->getLastSequenceNumber();
 
@@ -145,44 +135,41 @@ class Consumer extends AbstractKinesisService implements ConsumerInterface
                     $this->processError($e, $messages);
                 }
 
-                $this->getConsumerRecovery()->storeLastSuccessPosition($last_sequence_number);
+                $this->consumerRecovery->storeLastSuccessPosition($last_sequence_number);
             }
         }
-        while ($this->getLag() > 0 && ($start + $runTime > time()));
+        while ($this->getLag() > 0 && ($start + $run_time > time()));
     }
 
     /**
      * Do a single call to a Kinesis stream to get messages.
      *
-     * @param string $shardId
+     * @param string $shard_id
      *   The shard id from which to start reading.
-     * @param string $lastSequenceNumber
+     * @param string $last_sequence_number
      *   The last record sequence number the last call of getRecords() ended. The
      *   value will be provided by a subsequent call of getLastSequenceNumber().
      *
      * @return \robocloud\Message\MessageInterface[]
      *   The messages.
      */
-    protected function getMessages($shardId = NULL, $lastSequenceNumber = NULL): array
+    protected function getMessages($shard_id = NULL, $last_sequence_number = NULL): array
     {
 
         $records = [];
 
         // Get the initial iterator.
         try {
-            $shard_iterator = $this->getInitialShardIterator($shardId, $lastSequenceNumber);
+            $shard_iterator = $this->getInitialShardIterator($shard_id, $last_sequence_number);
         } catch (\Exception $e) {
             $this->processError($e, [
-                'shard_id' => $shardId,
-                'last_sequence_number' => $lastSequenceNumber,
+                'shard_id' => $shard_id,
+                'last_sequence_number' => $last_sequence_number,
             ]);
 
             return $records;
         }
 
-        // Keep running until we have next shard iterator and we are not at
-        // the latest record and (we are not over the run time or we have not
-        // yet received any records).
         do {
 
             $has_records = FALSE;
@@ -198,7 +185,7 @@ class Consumer extends AbstractKinesisService implements ConsumerInterface
                 // Get the Shard iterator for next batch.
                 $shard_iterator = $res->get('NextShardIterator');
                 $behind_latest = $res->get('MillisBehindLatest');
-
+var_dump($behind_latest);
                 foreach ($res->search('Records[].[SequenceNumber, Data]') as $event) {
                     list($sequence_number, $message_data) = $event;
 
@@ -218,10 +205,6 @@ class Consumer extends AbstractKinesisService implements ConsumerInterface
 
         if (!empty($sequence_number)) {
             $this->lastSequenceNumber = $sequence_number;
-        }
-
-        if (!empty($shardId)) {
-            $this->lastShardId = $shardId;
         }
 
         if (!empty($behind_latest)) {
@@ -248,17 +231,6 @@ class Consumer extends AbstractKinesisService implements ConsumerInterface
     protected function getLastSequenceNumber(): string
     {
         return $this->lastSequenceNumber;
-    }
-
-    /**
-     * Gets the last shard id.
-     *
-     * @return string
-     *   The shard id.
-     */
-    protected function getLastShardId(): string
-    {
-        return $this->lastShardId;
     }
 
     /**
@@ -308,14 +280,6 @@ class Consumer extends AbstractKinesisService implements ConsumerInterface
     public function getType()
     {
         return 'consumer';
-    }
-
-    /**
-     * @return ConsumerRecoveryInterface
-     */
-    protected function getConsumerRecovery(): ConsumerRecoveryInterface
-    {
-        return $this->consumerRecovery;
     }
 
     /**

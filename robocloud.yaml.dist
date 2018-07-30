@@ -7,7 +7,7 @@ robocloud:
         - '/where/the/schema/files/are'
         - '/where/more/schemas/are'
     # The message class to be used.
-    message_class: 'robocloud\Message\Message'
+    message_class: 'robocloud\Message\RoboMessage'
 
     # Amazon Kinesis.
     kinesis:

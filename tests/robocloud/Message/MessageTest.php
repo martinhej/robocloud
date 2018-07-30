@@ -3,15 +3,13 @@
 namespace robocloud\Tests\Message;
 
 use PHPUnit\Framework\TestCase;
-use robocloud\Message\Message;
+use robocloud\Message\RoboMessage;
 
 class MessageTest extends TestCase
 {
-    public function setUp()
-    {
-
-    }
-
+    /**
+     * Tests if message is instantiated with all its properties.
+     */
     public function testMessageInstantiation()
     {
         $message_data = [
@@ -27,7 +25,7 @@ class MessageTest extends TestCase
             'recipientsWildcard' => 'test.robo.*',
         ];
 
-        $message = new Message($message_data);
+        $message = new RoboMessage($message_data);
 
         $this->assertNotEmpty($message->getMessageId(), 'Message Id was generated');
 

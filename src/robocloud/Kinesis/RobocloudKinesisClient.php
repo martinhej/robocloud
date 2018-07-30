@@ -13,6 +13,11 @@ class RobocloudKinesisClient {
     protected $config;
 
     /**
+     * @var array
+     */
+    protected $clients = [];
+
+    /**
      * RobocloudKinesisClient constructor.
      *
      * @param ContainerInterface $container
@@ -32,6 +37,11 @@ class RobocloudKinesisClient {
      */
     public function getKinesisClient($type)
     {
+
+        if (!empty($this->clients[$type])) {
+            return $this->clients[$type];
+        }
+
         $config = [
             'version' => $this->config['api_version'],
             'region' => $this->config['region'],
@@ -43,6 +53,8 @@ class RobocloudKinesisClient {
         ];
 
         $sdk = new Sdk();
-        return $sdk->createKinesis($config);
+        $this->clients[$type] = $sdk->createKinesis($config);
+
+        return $this->clients[$type];
     }
 }

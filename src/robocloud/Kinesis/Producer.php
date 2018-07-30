@@ -56,7 +56,7 @@ class Producer extends AbstractKinesisService implements ProducerInterface
      */
     public function pushAll()
     {
-        /** @var \robocloud\Message\Message[] $chunk */
+        /** @var \robocloud\Message\RoboMessage[] $chunk */
         foreach (array_chunk($this->buffer, self::KINESIS_MAX_PUT_RECORDS_COUNT) as $chunk) {
             try {
                 $this->putRecords($chunk);

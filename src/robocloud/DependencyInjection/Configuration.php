@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface {
             ->children()
                 ->scalarNode('stream_name')->isRequired()->end()
                 ->scalarNode('message_schema_dir')->isRequired()->end()
-                ->scalarNode('message_class')->defaultValue('robocloud\Message\Message')->end()
+                ->scalarNode('message_class')->defaultValue('robocloud\Message\RoboMessage')->end()
             ->end();
 
         $this->addKinesisConfiguration($rootNode);
